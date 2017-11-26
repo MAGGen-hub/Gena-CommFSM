@@ -32,6 +32,10 @@ public class State {
     // Can be: (INITIAL, FINAL, GENERAL)
     public final StateType type;
 
+    public String name() {
+        return name;
+    }
+
     /**
      * Constructing new state
      *

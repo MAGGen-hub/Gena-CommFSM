@@ -38,6 +38,10 @@ public class Transition {
     // destination of transition
     public final State to;
 
+    public String name() {
+        return name;
+    }
+
     /**
      * Construct a new transition
      *

@@ -22,7 +22,7 @@
  */
 package cfsm.domain;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Represents a parsed configuration specified by CFSM protocol specification
@@ -32,16 +32,16 @@ public class CFSMConfiguration {
     // name and version of protocol. For example: "CFSM 0.2"
     public final String protocol;
     // list of machines in given configuration
-    public final List<Machine> automata;
+    public final Map<String, Machine> machines;
 
     /**
      * Constructs new configuration object
      *
      * @param protocol name and version of protocol
-     * @param automata list of machines in given configuration
+     * @param machines list of machines in given configuration
      */
-    public CFSMConfiguration(String protocol, List<Machine> automata) {
+    public CFSMConfiguration(String protocol, Map<String, Machine> machines) {
         this.protocol = protocol;
-        this.automata = automata;
+        this.machines = machines;
     }
 }

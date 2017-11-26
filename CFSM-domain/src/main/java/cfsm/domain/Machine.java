@@ -23,6 +23,7 @@
 package cfsm.domain;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The object is represents a machine with ability to communicate
@@ -32,10 +33,13 @@ public class Machine {
     // machine name
     public final String name;
     // List of related states
-    public final List<State> states;
+    public final Map<String, State> states;
     //  List of transitions the machine have
-    public final List<Transition> transitions;
+    public final Map<String, Transition> transitions;
 
+    public String name() {
+        return name;
+    }
 
     /**
      * Construct new machine with given properties
@@ -44,7 +48,7 @@ public class Machine {
      * @param states      states the machine have
      * @param transitions transitions inside the machine
      */
-    public Machine(String name, List<State> states, List<Transition> transitions) {
+    public Machine(String name, Map<String, State> states, Map<String, Transition> transitions) {
         this.name = name;
         this.states = states;
         this.transitions = transitions;

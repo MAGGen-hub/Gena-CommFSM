@@ -26,4 +26,5 @@ dependencies {
 
     // Toolkit for json, concurrency and networking
     compile 'io.vertx:vertx-core:3.5.0'
+    testCompile 'io.vertx:vertx-unit:3.5.0'
 }
