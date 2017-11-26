@@ -30,3 +30,4 @@ proguard/
 build/
 bin/
 out/
+.vertx/
