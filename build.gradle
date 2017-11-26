@@ -24,6 +24,8 @@ group 'CFSM'
 
 ext {
     vertxVersion = '3.5.0'
+    slf4jVersion = '1.7.25'
+    commonsCliVersion = '1.4'
 }
 
 subprojects {

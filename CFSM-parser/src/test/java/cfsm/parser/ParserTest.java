@@ -38,7 +38,7 @@ public class ParserTest extends ParserHarness {
 
 
     @Test
-    public void hello() {
+    public void simpleParseTest() {
         String path = path("cfsm.json");
         CFSMConfiguration parse = parser.parse(path);
 
