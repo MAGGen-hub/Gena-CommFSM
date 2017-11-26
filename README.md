@@ -21,10 +21,9 @@ Note: make sure you have java 8 installed.
 
 ### Usage
 
+```text
 usage: cfsm
-
  -d,--destination <arg>   path where generated logs will be stored
- 
  -f,--file <arg>          path to file with description of model
- 
  -h,--help                print help message
+```
