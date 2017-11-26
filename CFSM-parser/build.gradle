@@ -22,5 +22,11 @@
 */
 
 dependencies {
+
+    // compile domain classes
     compile project(':CFSM-domain')
+    // Toolkit for json, concurrency and networking
+    compile "io.vertx:vertx-core:${vertxVersion}"
+    // test
+    testCompile "io.vertx:vertx-unit:${vertxVersion}"
 }

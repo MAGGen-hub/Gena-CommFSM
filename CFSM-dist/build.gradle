@@ -21,10 +21,25 @@
 *  SOFTWARE.
 */
 
-apply plugin : 'application'
+apply plugin: 'application'
 
 dependencies {
-    compile project(':CFSM-parser')
+    implementation project(':CFSM-parser')
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
 }
 
 mainClassName = 'cfsm.dist.Main'
+
+// task for generating jar with all dependencies
+task fjar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': mainClassName
+    }
+    baseName = 'cfsm'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+build.finalizedBy(fjar)

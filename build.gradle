@@ -22,7 +22,9 @@
 */
 group 'CFSM'
 
-vertxVersion = '3.5.0'
+ext {
+    vertxVersion = '3.5.0'
+}
 
 subprojects {
 
@@ -35,15 +37,15 @@ subprojects {
     }
 
     dependencies {
-        // Toolkit for json, concurrency and networking
-        compile "io.vertx:vertx-core:${vertxVersion}"
-
         // test
         testCompile group: 'junit', name: 'junit', version: '4.12'
-        testCompile "io.vertx:vertx-unit:${vertxVersion}"
     }
 }
 
 allprojects {
     version '0.2'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3.1'
 }
