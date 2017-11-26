@@ -29,3 +29,5 @@ proguard/
 .gradle/
 build/
 bin/
+out/
+.vertx/
