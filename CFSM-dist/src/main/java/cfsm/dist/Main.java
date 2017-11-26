@@ -22,21 +22,20 @@
  */
 package cfsm.dist;
 
+import cfsm.domain.CFSMConfiguration;
+import cfsm.parser.Parser;
+import io.vertx.core.Vertx;
 import org.apache.commons.cli.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 public class Main {
-
-    private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
-
     public static void main(String[] args) {
         init(args);
     }
 
     private static void init(String[] args) {
+        Vertx vertx = Vertx.vertx();
         try {
 
             // options specification
@@ -77,9 +76,17 @@ public class Main {
                 System.out.println("Destination is not specified.");
             }
 
+            System.out.println("Parsing configuration file......");
+
+            Parser cfsmParser = new Parser(vertx);
+            CFSMConfiguration configuration = cfsmParser.parse(new File(file).getAbsolutePath());
+            System.out.println(String.format("%d machines found", configuration.machines.size()));
+
         } catch (ParseException e) {
             System.out.println("Not able to parse given options. Please, use help for details");
             e.printStackTrace();
+        } finally {
+            vertx.close();
         }
     }
 

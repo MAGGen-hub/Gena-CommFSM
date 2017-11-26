@@ -13,6 +13,8 @@ The project uses gradle as a build system. In order to build cli jar use:
 $ ./gradlew build
 # run jar 
 $ java -jar CFSM-dist/build/libs/cfsm-0.2.jar -help
+# example usage with test config
+$ java -jar CFSM-dist/build/libs/cfsm-0.2.jar -f ./CFSM-parser/src/test/resources/cfsm.json 
 ```
 
 Note: make sure you have java 8 installed.
