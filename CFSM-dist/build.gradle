@@ -21,4 +21,10 @@
 *  SOFTWARE.
 */
 
-include 'CFSM-parser', 'CFSM-dist'
+apply plugin : 'application'
+
+dependencies {
+    compile project(':CFSM-parser')
+}
+
+mainClassName = 'cfsm.dist.Main'
