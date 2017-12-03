@@ -26,6 +26,7 @@ ext {
     vertxVersion = '3.5.0'
     slf4jVersion = '1.7.25'
     commonsCliVersion = '1.4'
+    codacyReporterVersion = '1.0.7'
 }
 
 subprojects {
@@ -44,11 +45,12 @@ subprojects {
 
     dependencies {
         // code coverage
-        codacy group: 'com.codacy', name: 'codacy-coverage-reporter', version: '1.0.7'
+        codacy group: 'com.codacy', name: 'codacy-coverage-reporter', version: codacyReporterVersion
         // test
         testCompile group: 'junit', name: 'junit', version: '4.12'
     }
 
+    // task for pushing code coverage
     task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
         main = "com.codacy.CodacyCoverageReporter"
         classpath = configurations.codacy
@@ -59,6 +61,7 @@ subprojects {
                 "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         ]
 
+        // the condition for task run
         onlyIf {
             file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml").exists() &&
                     System.env['CODACY_PROJECT_TOKEN'] != null
