@@ -37,11 +37,32 @@ subprojects {
     repositories {
         jcenter()
         mavenCentral()
+        maven { url "http://dl.bintray.com/typesafe/maven-releases" }
     }
 
+    configurations { codacy }
+
     dependencies {
+        // code coverage
+        codacy group: 'com.codacy', name: 'codacy-coverage-reporter', version: '1.0.7'
         // test
         testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+    task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
+        main = "com.codacy.CodacyCoverageReporter"
+        classpath = configurations.codacy
+        args = [
+                "-l",
+                "Java",
+                "-r",
+                "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+        ]
+
+        onlyIf {
+            file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml").exists() &&
+                    System.env['CODACY_PROJECT_TOKEN'] != null
+        }
     }
 
     // test coverage
@@ -52,7 +73,10 @@ subprojects {
         }
     }
 
-    check.dependsOn jacocoTestReport
+    // sending code coverage report
+    check.dependsOn sendCoverageToCodacy
+
+
 }
 
 allprojects {
