@@ -1,5 +1,7 @@
 # Gene-CommFSM
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6ec021d65858412cb90dba82f2d4562a)](https://www.codacy.com/app/Sammers21/Gena-CommFSM?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=PAIS-Lab-Public-Projects/Gena-CommFSM&amp;utm_campaign=Badge_Grade)
+
 [![Build Status](https://travis-ci.org/PAIS-Lab-Public-Projects/Gena-CommFSM.svg?branch=master)](https://travis-ci.org/PAIS-Lab-Public-Projects/Gena-CommFSM)
 
 Gene-CommFSM is a tool aimed to emulating behavior of 
