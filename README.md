@@ -1,5 +1,7 @@
 # Gene-CommFSM
 
+[![Build Status](https://travis-ci.org/PAIS-Lab-Public-Projects/Gena-CommFSM.svg?branch=master)](https://travis-ci.org/PAIS-Lab-Public-Projects/Gena-CommFSM)
+
 Gene-CommFSM is a tool aimed to emulating behavior of 
 communication of finite state machines.
 The result of emulation can be saved to a file
