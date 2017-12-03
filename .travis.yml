@@ -5,4 +5,4 @@ jdk:
   - oraclejdk9
 
 script:
-  - ./gradlew build -i
+  - gradle build -i
