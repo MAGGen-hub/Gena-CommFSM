@@ -88,7 +88,7 @@ public class Parser {
                                     State from = states.get(transition.getString("from"));
                                     State to = states.get(transition.getString("to"));
 
-                                    return new Transition(transitionName, TransitionState.valueOf(type), condition, from, to);
+                                    return new Transition(transitionName, TransitionType.valueOf(type), condition, from, to);
                                 }).collect(Collectors.toConcurrentMap(Transition::name, Function.identity()));
 
                         return new Machine(name, states, transitions);
