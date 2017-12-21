@@ -22,18 +22,33 @@
  */
 package cfsm.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The object is represents a {@link Machine} state
  */
 public class State {
 
     // State name
-    public final String name;
+    private final String name;
     // Can be: (INITIAL, FINAL, GENERAL)
     public final StateType type;
+    // where to go from the state?
+    private Map<String, Transition> outboundTransitions = new HashMap<>();
+    // where from someone can go here
+    private Map<String, Transition> inboundTransitions = new HashMap<>();
 
     public String name() {
         return name;
+    }
+
+    public Map<String, Transition> outboundTransitions() {
+        return outboundTransitions;
+    }
+
+    public Map<String, Transition> inboundTransitions() {
+        return inboundTransitions;
     }
 
     /**

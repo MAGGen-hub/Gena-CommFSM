@@ -31,6 +31,8 @@ public class Machine {
 
     // machine name
     public final String name;
+    // where we are starting to go
+    private final State initialState;
     // List of related states
     public final Map<String, State> states;
     //  List of transitions the machine have
@@ -51,5 +53,38 @@ public class Machine {
         this.name = name;
         this.states = states;
         this.transitions = transitions;
+        // TODO WARN If there are not only one Initial state
+        initialState = states.values()
+                .stream()
+                .filter(state -> state.type == StateType.INITIAL)
+                .findFirst()
+                .orElse(null);
+        buildTraverseGraph();
+    }
+
+    /**
+     * Aimed to fill {@link State#outboundTransitions()}
+     */
+    private void buildTraverseGraph() {
+        transitions.forEach((name, transition) -> {
+            State from = transition.from;
+            State to = transition.to;
+            from.outboundTransitions().put(name, transition);
+            to.inboundTransitions().put(name, transition);
+        });
+    }
+
+    /**
+     * @return is there are any initial state
+     */
+    public boolean haveInitialState() {
+        return initialState == null;
+    }
+
+    /**
+     * @return initial state of the machine
+     */
+    public State initialState() {
+        return initialState;
     }
 }
