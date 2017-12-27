@@ -77,7 +77,7 @@ public class Machine {
     /**
      * @return is there are any initial state
      */
-    public boolean haveInitialState() {
+    public boolean hasInitialState() {
         return initialState == null;
     }
 
