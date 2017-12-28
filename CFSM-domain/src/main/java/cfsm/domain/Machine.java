@@ -71,6 +71,9 @@ public class Machine {
             State to = transition.to;
             from.outboundTransitions().put(name, transition);
             to.inboundTransitions().put(name, transition);
+            transition.machine = this;
+            from.machine = this;
+            to.machine = this;
         });
     }
 

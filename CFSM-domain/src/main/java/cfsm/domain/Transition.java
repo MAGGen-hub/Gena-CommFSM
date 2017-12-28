@@ -37,6 +37,8 @@ public class Transition {
     public final State from;
     // destination of transition
     public final State to;
+    // related machine
+    public Machine machine;
 
     public String name() {
         return name;

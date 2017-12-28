@@ -40,11 +40,6 @@ package object engine {
       .groupBy((pair: (String, Transition)) => pair._1)
       .map((pair: (String, Iterable[(String, Transition)])) => (pair._1, pair._2.map(_._2)))
 
-
-  def move(setOfTransitionWeShouldMoveOn: Iterable[Transition]) = {
-
-  }
-
   /**
     * Main engine function responsible for log mining
     *
@@ -54,21 +49,26 @@ package object engine {
     */
   def mine(config: CFSMConfiguration, logFunction: Iterable[Transition] => Unit, selector: Iterable[String] => String): Unit = {
 
-    val miningMachines = config.machines.map(pair => (pair._1, MiningMachine(pair._2))).toMap
+    implicit val miningMachines: Map[String, MiningMachine] = config.machines.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)
 
     // while there are a place to go
     while (enabledTransitions.nonEmpty) {
 
       // choosing a transition delegating responsibility to a selector function
-      val selectedTransition = selector(enabledTransitions.keys)
+      val selectedTransition: String = selector(enabledTransitions.keys)
 
-      val setOfTransitionWeShouldMoveOn = enabledTransitions(selectedTransition)
+      val setOfTransitionWeShouldMoveOn: Iterable[Transition] = enabledTransitions(selectedTransition)
       logFunction(setOfTransitionWeShouldMoveOn)
 
-      move(setOfTransitionWeShouldMoveOn)
+      // move on transitions
+      setOfTransitionWeShouldMoveOn.foreach { transition =>
+        val machineName = transition.machine.name
+        val machine = miningMachines(machineName)
+        machine.goOnTransition(transition)
+      }
 
-      // refresh
+      // refresh enabled transitions
       enabledTransitions = getEnabledTransitions(miningMachines)
     }
   }
@@ -84,15 +84,24 @@ package object engine {
     @volatile
     var state: State = machineModel.initialState()
 
-    def goOnTransition(transition: Transition): Boolean = {
-
+    def goOnTransition(transition: Transition)
+                      (implicit allMachines: Map[String, MiningMachine]): Boolean = {
       val response = transition.from.name() == state.name()
 
       if (response) {
         transition.`type` match {
           case TransitionType.PRIVATE | TransitionType.SHARED => // nothing to do
           case TransitionType.RECM =>
+            val machineName = transition.condition.substring(1)
+            mailBox.get(machineName).map(_ -= 1)
           case TransitionType.SENDM =>
+            val machineName = transition.condition.substring(1)
+            val receiver = allMachines(machineName)
+            // send directly to the mailbox of target
+            receiver.mailBox.get(this) match {
+              case None => receiver.mailBox.put(this, 1)
+              case Some(count) => receiver.mailBox.put(this, count + 1)
+            }
         }
         state = transition.to
       }

@@ -53,8 +53,7 @@ public class Parser {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         final CFSMConfiguration[] config = new CFSMConfiguration[1];
 
-
-        FileSystem protocol1 = vertx.fileSystem().readFile(path, hf -> {
+        vertx.fileSystem().readFile(path, hf -> {
             JsonObject entries = hf.result().toJsonObject();
 
             String protocol = entries.getString("protocol");

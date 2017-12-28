@@ -38,6 +38,8 @@ public class State {
     private Map<String, Transition> outboundTransitions = new HashMap<>();
     // where from someone can go here
     private Map<String, Transition> inboundTransitions = new HashMap<>();
+    // related machine
+    public Machine machine;
 
     public String name() {
         return name;
