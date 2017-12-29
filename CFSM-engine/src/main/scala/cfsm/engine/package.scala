@@ -93,7 +93,8 @@ package object engine {
           case TransitionType.PRIVATE | TransitionType.SHARED => // nothing to do
           case TransitionType.RECM =>
             val machineName = transition.condition.substring(1)
-            mailBox.get(machineName).map(_ -= 1)
+            val currentMailCount: Int = mailBox(machineName)
+            mailBox.put(machineName, currentMailCount - 1)
           case TransitionType.SENDM =>
             val machineName = transition.condition.substring(1)
             val receiver = allMachines(machineName)
