@@ -23,4 +23,5 @@
 
 dependencies {
     compile project(':CFSM-domain')
+    testCompile project(':CFSM-parser')
 }
