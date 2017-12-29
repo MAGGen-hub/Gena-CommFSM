@@ -21,28 +21,15 @@
 *  SOFTWARE.
 */
 
-apply plugin: 'application'
+package cfsm.engine
 
-dependencies {
-    compile project(':CFSM-parser')
-    compile project(':CFSM-engine')
-    compile group: 'commons-cli', name: 'commons-cli', version: commonsCliVersion
-   // compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-    //compile group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4jVersion
+import scala.util.Random
+
+object Selectors {
+  type Selector = Iterable[String] => String
+
+  val RandomSelector: Selector = { strings =>
+    val index = Random.nextInt() % strings.size
+    strings.toVector(index)
+  }
 }
-
-mainClassName = 'cfsm.dist.Main'
-
-// task for generating jar with all dependencies
-task fjar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'CFSM dist',
-                'Implementation-Version': version,
-                'Main-Class': mainClassName
-    }
-    baseName = 'cfsm'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
-build.finalizedBy(fjar)

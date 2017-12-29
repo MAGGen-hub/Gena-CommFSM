@@ -21,28 +21,41 @@
 *  SOFTWARE.
 */
 
-apply plugin: 'application'
+package cfsm.engine
 
-dependencies {
-    compile project(':CFSM-parser')
-    compile project(':CFSM-engine')
-    compile group: 'commons-cli', name: 'commons-cli', version: commonsCliVersion
-   // compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
-    //compile group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4jVersion
+import java.util.concurrent.atomic.AtomicInteger
+
+import cfsm.domain.CFSMConfiguration
+import cfsm.parser.Parser
+import io.vertx.core.Vertx
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec}
+
+/**
+  * A base test template for engine module
+  */
+class TestBase extends FlatSpec with BeforeAndAfterEach with BeforeAndAfterAll {
+  val vertx: Vertx = Vertx.vertx()
+  val parser = new Parser(vertx)
+  var int = new AtomicInteger(1)
+
+
+  override protected def beforeEach(): Unit = {
+    int = new AtomicInteger(1)
+  }
+
+  override protected def afterAll(): Unit = {
+    vertx.close()
+  }
+
+  /**
+    * Execute something in context of config
+    *
+    * @param pathToConfig where a config stored
+    * @param handler      a function to call with config object
+    */
+  def withConfig(pathToConfig: String)(handler: CFSMConfiguration => Unit): Unit = {
+    val config = parser.parse(pathToConfig)
+    handler(config)
+  }
 }
 
-mainClassName = 'cfsm.dist.Main'
-
-// task for generating jar with all dependencies
-task fjar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'CFSM dist',
-                'Implementation-Version': version,
-                'Main-Class': mainClassName
-    }
-    baseName = 'cfsm'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
-build.finalizedBy(fjar)

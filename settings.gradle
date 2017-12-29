@@ -21,4 +21,4 @@
 *  SOFTWARE.
 */
 
-include 'CFSM-parser', 'CFSM-dist', 'CFSM-domain'
+include 'CFSM-parser', 'CFSM-dist', 'CFSM-domain','CFSM-engine'

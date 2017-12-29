@@ -25,7 +25,7 @@ package cfsm.domain;
 /**
  * The object is represents a type of {@link Transition}
  */
-public enum TransitionState {
+public enum TransitionType {
 
     // Transition inside a machine. Does not require interaction with other machines.
     // The condition field for such transitions is always "None".

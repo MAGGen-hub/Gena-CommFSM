@@ -53,8 +53,7 @@ public class Parser {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         final CFSMConfiguration[] config = new CFSMConfiguration[1];
 
-
-        FileSystem protocol1 = vertx.fileSystem().readFile(path, hf -> {
+        vertx.fileSystem().readFile(path, hf -> {
             JsonObject entries = hf.result().toJsonObject();
 
             String protocol = entries.getString("protocol");
@@ -88,7 +87,7 @@ public class Parser {
                                     State from = states.get(transition.getString("from"));
                                     State to = states.get(transition.getString("to"));
 
-                                    return new Transition(transitionName, TransitionState.valueOf(type), condition, from, to);
+                                    return new Transition(transitionName, TransitionType.valueOf(type), condition, from, to);
                                 }).collect(Collectors.toConcurrentMap(Transition::name, Function.identity()));
 
                         return new Machine(name, states, transitions);

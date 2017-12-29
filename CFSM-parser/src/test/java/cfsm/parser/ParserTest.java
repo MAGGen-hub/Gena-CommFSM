@@ -24,7 +24,6 @@ package cfsm.parser;
 
 import cfsm.domain.*;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,10 +55,21 @@ public class ParserTest extends ParserHarness {
         assertTrue(state1.type.equals(StateType.INITIAL));
         assertTrue(state2.type.equals(StateType.FINAL));
 
-        assertTrue(machine.transitions.get("transition1").type.equals(TransitionState.PRIVATE));
+        assertTrue(machine.transitions.get("transition1").type.equals(TransitionType.PRIVATE));
         assertTrue(machine.transitions.get("transition1").condition.equals("None"));
         assertTrue(machine.transitions.get("transition1").from == state1);
         assertTrue(machine.transitions.get("transition1").to == state2);
     }
 
+    @Test
+    public void twoMachinesParseTest() {
+        String path = path("cfsm1.json");
+        CFSMConfiguration parse = parser.parse(path);
+
+        Machine machine1 = parse.machines.get("machine1");
+        Machine machine2 = parse.machines.get("machine2");
+
+        assertTrue(machine1 != null);
+        assertTrue(machine2 != null);
+    }
 }

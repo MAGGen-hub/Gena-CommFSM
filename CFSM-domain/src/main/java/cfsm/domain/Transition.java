@@ -30,13 +30,15 @@ public class Transition {
     // a name of transition
     public final String name;
     // can be one of: (PRIVATE, SHARED, SENDM, RECM)
-    public final TransitionState type;
+    public final TransitionType type;
     // a condition for transition
     public final String condition;
     // a entering point for transitions
     public final State from;
     // destination of transition
     public final State to;
+    // related machine
+    public Machine machine;
 
     public String name() {
         return name;
@@ -51,7 +53,7 @@ public class Transition {
      * @param from      a entering point for transitions
      * @param to        destination of transition¬
      */
-    public Transition(String name, TransitionState type, String condition, State from, State to) {
+    public Transition(String name, TransitionType type, String condition, State from, State to) {
         this.name = name;
         this.type = type;
         this.condition = condition;
