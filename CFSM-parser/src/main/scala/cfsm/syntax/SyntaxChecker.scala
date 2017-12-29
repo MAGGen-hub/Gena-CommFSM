@@ -30,7 +30,7 @@ import scala.collection.JavaConverters._
 /**
   * Aimed to check for any syntax errors
   */
-object Checker {
+object SyntaxChecker {
 
   val OK = "OK"
 
