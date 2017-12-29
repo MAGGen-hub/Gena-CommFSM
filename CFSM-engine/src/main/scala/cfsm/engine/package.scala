@@ -23,7 +23,11 @@
 
 package cfsm
 
+import java.util
+
 import cfsm.domain._
+import cfsm.engine.Loggers.Logger
+import cfsm.engine.Selectors.Selector
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -36,18 +40,18 @@ package object engine {
     */
   def getEnabledTransitions(machines: Map[String, MiningMachine]): Map[String, Iterable[Transition]] =
     machines.values
-      .flatMap(machine => machine.state.outboundTransitions())
+      .flatMap(_.enabledTransitions())
       .groupBy((pair: (String, Transition)) => pair._1)
       .map((pair: (String, Iterable[(String, Transition)])) => (pair._1, pair._2.map(_._2)))
 
   /**
     * Main engine function responsible for log mining
     *
-    * @param config      machines configuration
-    * @param logFunction when one iteration is done the function called in order to decide whether we should move next or not
-    * @param selector    function responsible for figuring out which transition should be chosen
+    * @param config machines configuration
+    * @param log    when one iteration is done the function called in order to decide whether we should move next or not
+    * @param select function responsible for figuring out which transition should be chosen
     */
-  def mine(config: CFSMConfiguration, logFunction: Iterable[Transition] => Unit, selector: Iterable[String] => String): Unit = {
+  def mine(config: CFSMConfiguration, log: Logger, select: Selector): Unit = {
 
     implicit val miningMachines: Map[String, MiningMachine] = config.machines.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)
@@ -56,10 +60,10 @@ package object engine {
     while (enabledTransitions.nonEmpty) {
 
       // choosing a transition delegating responsibility to a selector function
-      val selectedTransition: String = selector(enabledTransitions.keys)
+      val selectedTransition: String = select(enabledTransitions.keys)
 
       val setOfTransitionWeShouldMoveOn: Iterable[Transition] = enabledTransitions(selectedTransition)
-      logFunction(setOfTransitionWeShouldMoveOn)
+      log(setOfTransitionWeShouldMoveOn)
 
       // move on transitions
       setOfTransitionWeShouldMoveOn.foreach { transition =>
@@ -84,6 +88,12 @@ package object engine {
     @volatile
     var state: State = machineModel.initialState()
 
+    /**
+      * Force machine to change state
+      * @param transition where to go
+      * @param allMachines link to all machines
+      * @return is operation successful
+      */
     def goOnTransition(transition: Transition)
                       (implicit allMachines: Map[String, MiningMachine]): Boolean = {
       val response = transition.from.name() == state.name()
@@ -109,8 +119,31 @@ package object engine {
 
       response
     }
-  }
 
-  case class Message()
+    /**
+      * Check for ability to go to given state
+      * @param transition transition to go
+      * @param allMachines link to all machines
+      * @return can we go?
+      */
+    def canGoOnTransition(transition: Transition)
+                         (implicit allMachines: Map[String, MiningMachine]): Boolean = {
+      transition.`type` match {
+        case TransitionType.PRIVATE | TransitionType.SHARED | TransitionType.SENDM =>
+          true
+        case TransitionType.RECM =>
+          val machineName = transition.condition.substring(1)
+          mailBox.putIfAbsent(allMachines(machineName), 0)
+          val currentMailCount: Int = mailBox(machineName)
+          currentMailCount > 0
+      }
+    }
+
+    /**
+      * @return available transitions to go
+      */
+    def enabledTransitions(): util.Map[String, Transition] =
+      state.outboundTransitions().filter((pair: (String, Transition)) => this.canGoOnTransition(pair._2))
+  }
 
 }
