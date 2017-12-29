@@ -23,12 +23,10 @@
 
 package cfsm.engine
 
-import java.util
-
 import cfsm.domain.{Machine, State, Transition, TransitionType}
 
-import scala.collection.mutable
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 case class MiningMachine(machineModel: Machine) {
 

@@ -28,7 +28,7 @@ import cfsm.domain.Transition
 object Loggers {
   type Logger = Iterable[Transition] => Unit
 
-  val SimpleLogger: Logger = { transitions=>
+  val SimpleLogger: Logger = { transitions =>
     println(transitions)
   }
 }
