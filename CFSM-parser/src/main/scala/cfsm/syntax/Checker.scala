@@ -23,8 +23,8 @@
 
 package cfsm.syntax
 
-import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
+
 import scala.collection.JavaConverters._
 
 /**
