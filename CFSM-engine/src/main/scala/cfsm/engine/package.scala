@@ -38,7 +38,7 @@ package object engine {
     * @param machines mining machines
     * @return transition_name <----> Set of transitions with such name
     */
-  def getEnabledTransitions(machines: Map[String, MiningMachine]): Map[String, Iterable[Transition]] =
+  def getEnabledTransitions(implicit machines: Map[String, MiningMachine]): Map[String, Iterable[Transition]] =
     machines.values
       .flatMap(_.enabledTransitions())
       .groupBy((pair: (String, Transition)) => pair._1)
@@ -90,7 +90,8 @@ package object engine {
 
     /**
       * Force machine to change state
-      * @param transition where to go
+      *
+      * @param transition  where to go
       * @param allMachines link to all machines
       * @return is operation successful
       */
@@ -122,7 +123,8 @@ package object engine {
 
     /**
       * Check for ability to go to given state
-      * @param transition transition to go
+      *
+      * @param transition  transition to go
       * @param allMachines link to all machines
       * @return can we go?
       */
@@ -142,7 +144,7 @@ package object engine {
     /**
       * @return available transitions to go
       */
-    def enabledTransitions(): util.Map[String, Transition] =
+    def enabledTransitions()(implicit allMachines: Map[String, MiningMachine]): util.Map[String, Transition] =
       state.outboundTransitions().filter((pair: (String, Transition)) => this.canGoOnTransition(pair._2))
   }
 
