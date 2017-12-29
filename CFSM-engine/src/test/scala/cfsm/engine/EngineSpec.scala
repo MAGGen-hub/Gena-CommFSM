@@ -31,6 +31,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest._
 import Matchers._
+
 /**
   * Testing on [[cfsm.engine]] module
   */
@@ -42,19 +43,15 @@ class EngineSpec extends TestBase {
 
   it should "work on basic example" in {
     // there are only one machine with one transitions
-    val log: Logger = { trans => trans.toVector(0).name shouldBe "transition1"}
+    val log: Logger = { trans => trans.toVector(0).name shouldBe "transition1" }
     withConfig("cfsm.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
     }
   }
 
-
-  it should "work on example with " in {
-
+  it should "work on example with 2 machines communicated via message sending" in {
     val int = new AtomicInteger(1)
-
     val log: Logger = { trans =>
-
       // transitions should be triggered one by one
       int.get() match {
         case 1 => trans.toVector(0).name shouldBe "transition1"
@@ -64,6 +61,26 @@ class EngineSpec extends TestBase {
       int.incrementAndGet()
     }
     withConfig("cfsm1.json") { config: CFSMConfiguration =>
+      mine(config, log, Selectors.RandomSelector)
+    }
+  }
+
+
+  // a bit more complicated of precious test
+  it should "work on example with 3 machines communicated via message sending" in {
+    val int = new AtomicInteger(1)
+    val log: Logger = { trans =>
+      // transitions should be triggered one by one
+      int.get() match {
+        case 1 => trans.toVector(0).name shouldBe "transition1"
+        case 2 => trans.toVector(0).name shouldBe "transition2"
+        case 3 => trans.toVector(0).name shouldBe "transition3"
+        case 4 => trans.toVector(0).name shouldBe "transition4"
+        case _ => 1 shouldBe 2 //fail a test
+      }
+      int.incrementAndGet()
+    }
+    withConfig("cfsm2.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
     }
   }
