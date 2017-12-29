@@ -23,7 +23,9 @@
 
 package cfsm.syntax
 
-import io.vertx.core.json.JsonObject
+import cfsm.domain.CFSMConfiguration
+import io.vertx.core.Vertx
+import io.vertx.core.json.{DecodeException, JsonObject}
 
 import scala.collection.JavaConverters._
 
@@ -63,7 +65,7 @@ object SyntaxChecker {
 
   val DefaultListOfCheckers =
     List(
-      TopLevelOnlyProtocolAndMachines
+      TopLevelOnlyProtocolAndMachines(_)
     )
 
 
@@ -79,5 +81,21 @@ object SyntaxChecker {
       else {
         OK
       }
+  }
+
+  /**
+    * @param path path to json
+    * @return (raw_json, syntax_warns)
+    */
+  def rawParse(path: String): (Option[JsonObject], String) = {
+    val vertx = Vertx.vertx
+    try {
+      (Some(vertx.fileSystem.readFileBlocking(path).toJsonObject), OK)
+    }
+    catch {
+      case _ => (None, "Given JSON is invalid")
+    } finally {
+      vertx.close()
+    }
   }
 }

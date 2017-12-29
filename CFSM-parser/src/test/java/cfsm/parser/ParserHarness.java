@@ -33,20 +33,6 @@ import java.util.Objects;
  */
 public class ParserHarness {
 
-    protected Vertx vertx;
-    protected Parser parser;
-
-    @Before
-    public void before() {
-        vertx = Vertx.vertx();
-        parser = new Parser(vertx);
-    }
-
-    @After
-    public void after() {
-        vertx.close();
-    }
-
     /**
      * Get full path to resource classpath
      */

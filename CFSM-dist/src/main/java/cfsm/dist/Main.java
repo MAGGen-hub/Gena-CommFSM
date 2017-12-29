@@ -24,8 +24,12 @@ package cfsm.dist;
 
 import cfsm.domain.CFSMConfiguration;
 import cfsm.parser.Parser;
+import cfsm.syntax.SyntaxChecker;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import org.apache.commons.cli.*;
+import scala.Option;
+import scala.Tuple2;
 
 import java.io.File;
 
@@ -78,8 +82,15 @@ public class Main {
 
             System.out.println("Parsing configuration file......");
 
-            Parser cfsmParser = new Parser(vertx);
-            CFSMConfiguration configuration = cfsmParser.parse(new File(file).getAbsolutePath());
+            Tuple2<Option<JsonObject>, String> res = SyntaxChecker.rawParse(new File(file).getAbsolutePath());
+
+            // print result of parsing
+            System.out.println(res._2);
+            if (res._1.isEmpty()) {
+                return;
+            }
+
+            CFSMConfiguration configuration = Parser.parse(res._1.get());
             System.out.println(String.format("%d machines found", configuration.machines.size()));
 
         } catch (ParseException e) {
