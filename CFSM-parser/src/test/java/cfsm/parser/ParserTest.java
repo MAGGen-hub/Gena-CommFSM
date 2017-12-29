@@ -61,4 +61,15 @@ public class ParserTest extends ParserHarness {
         assertTrue(machine.transitions.get("transition1").to == state2);
     }
 
+    @Test
+    public void twoMachinesParseTest() {
+        String path = path("cfsm1.json");
+        CFSMConfiguration parse = parser.parse(path);
+
+        Machine machine1 = parse.machines.get("machine1");
+        Machine machine2 = parse.machines.get("machine2");
+
+        assertTrue(machine1 != null);
+        assertTrue(machine2 != null);
+    }
 }
