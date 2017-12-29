@@ -43,6 +43,15 @@ package object engine {
       .flatMap(_.enabledTransitions())
       .groupBy((pair: (String, Transition)) => pair._1)
       .map((pair: (String, Iterable[(String, Transition)])) => (pair._1, pair._2.map(_._2)))
+      .filter {
+        case (_, transitions) =>
+          val vector = transitions.toVector
+          vector(0).`type` match {
+            // only if shared condition in fine
+            case TransitionType.SHARED => vector.size >= vector(0).condition.toInt
+            case _ => true
+          }
+      }
 
   /**
     * Main engine function responsible for log mining
