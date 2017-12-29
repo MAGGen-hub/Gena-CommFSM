@@ -23,7 +23,8 @@
 group 'CFSM'
 
 ext {
-    scalaVersion='2.13.0-M2'
+    scalaVersion='2.12'
+    scalaVersionFull="$scalaVersion.4"
     vertxVersion = '3.5.0'
     slf4jVersion = '1.7.25'
     commonsCliVersion = '1.4'
@@ -48,7 +49,7 @@ subprojects {
 
     dependencies {
         // scala std lib
-        compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
+        compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersionFull
         // code coverage
         codacy group: 'com.codacy', name: 'codacy-coverage-reporter', version: codacyReporterVersion
 
