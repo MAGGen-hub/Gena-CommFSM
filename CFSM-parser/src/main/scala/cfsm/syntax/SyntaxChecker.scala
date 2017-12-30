@@ -206,7 +206,7 @@ object SyntaxChecker {
       (Some(vertx.fileSystem.readFileBlocking(path).toJsonObject), OK)
     }
     catch {
-      case _ => (None, "Given JSON is invalid")
+      case _: Throwable => (None, "Given JSON is invalid")
     } finally {
       vertx.close()
     }
