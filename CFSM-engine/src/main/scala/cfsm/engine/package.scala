@@ -26,8 +26,28 @@ package cfsm
 import cfsm.domain._
 import cfsm.engine.Loggers.Logger
 import cfsm.engine.Selectors.Selector
+import cfsm.engine.{Loggers, _}
 
 import scala.collection.JavaConversions._
+
+//noinspection ScalaStyle
+object Mine {
+
+  /**
+    * Entry point of mining
+    */
+  def begin(conf: CFSMConfiguration, destination: String): Unit = {
+    // choosing a logger
+    val log: Logger = if (destination == null) {
+      Loggers.SimpleLogger
+    } else {
+      println("File loggers is not supported yet")
+      return
+    }
+
+    mine(conf, log, Selectors.RandomSelector)
+  }
+}
 
 package object engine {
 

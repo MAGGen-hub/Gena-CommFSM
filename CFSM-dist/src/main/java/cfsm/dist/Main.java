@@ -22,10 +22,10 @@
  */
 package cfsm.dist;
 
+import cfsm.Mine;
 import cfsm.domain.CFSMConfiguration;
 import cfsm.parser.Parser;
 import cfsm.syntax.SyntaxChecker;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.cli.*;
 import scala.Option;
@@ -39,7 +39,6 @@ public class Main {
     }
 
     private static void init(String[] args) {
-        Vertx vertx = Vertx.vertx();
         try {
 
             // options specification
@@ -60,7 +59,7 @@ public class Main {
             }
 
             String file = cmd.getOptionValue("file");
-            String dist = cmd.getOptionValue("destination");
+            String dest = cmd.getOptionValue("destination");
 
             // check for -file option
             if (file == null) {
@@ -76,10 +75,6 @@ public class Main {
                 return;
             }
 
-            if (dist == null) {
-                System.out.println("Destination is not specified.");
-            }
-
             System.out.println("Parsing configuration file......");
 
             Tuple2<Option<JsonObject>, String> res = SyntaxChecker.rawParse(new File(file).getAbsolutePath());
@@ -93,11 +88,11 @@ public class Main {
             CFSMConfiguration configuration = Parser.parse(res._1.get());
             System.out.println(String.format("%d machines found", configuration.machines.size()));
 
+            // begin mining
+            Mine.begin(configuration, dest);
         } catch (ParseException e) {
             System.out.println("Not able to parse given options. Please, use help for details");
             e.printStackTrace();
-        } finally {
-            vertx.close();
         }
     }
 
