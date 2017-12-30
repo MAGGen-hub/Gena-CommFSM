@@ -80,8 +80,10 @@ public class Main {
             Tuple2<Option<JsonObject>, String> res = SyntaxChecker.rawParse(new File(file).getAbsolutePath());
 
             // print result of parsing
-            System.out.println(res._2);
-            if (res._1.isEmpty()) {
+            System.out.println("Valid: " + res._2);
+            String check = SyntaxChecker.check(res._1.get());
+            System.out.println("Syntax: " + check);
+            if (res._1.isEmpty() || !check.equals(SyntaxChecker.OK())) {
                 return;
             }
 
