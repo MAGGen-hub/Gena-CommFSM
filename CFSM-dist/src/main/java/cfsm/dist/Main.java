@@ -80,14 +80,20 @@ public class Main {
             Tuple2<Option<JsonObject>, String> res = SyntaxChecker.rawParse(new File(file).getAbsolutePath());
 
             // print result of parsing
-            System.out.println("Valid: " + res._2);
+            System.out.println("Valid JSON: " + res._2);
             String check = SyntaxChecker.check(res._1.get());
-            System.out.println("Syntax: " + check);
+            System.out.println("Valid syntax: " + check);
             if (res._1.isEmpty() || !check.equals(SyntaxChecker.OK())) {
                 return;
             }
 
             CFSMConfiguration configuration = Parser.parse(res._1.get());
+            String validate = Parser.validate(configuration);
+            System.out.println("Valid config objects: " + validate);
+            if (!validate.equals(SyntaxChecker.OK())) {
+                return;
+            }
+
             System.out.println(String.format("%d machines found", configuration.machines.size()));
 
             // begin mining

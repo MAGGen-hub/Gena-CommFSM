@@ -108,4 +108,33 @@ public class ParserTest extends ParserHarness {
         Tuple2<Option<JsonObject>, String> res = SyntaxChecker.rawParse(path);
         assertTrue(!res._2.equals(SyntaxChecker.OK()));
     }
+
+    @Test
+    public void invalidMachine() {
+        String validate = validateJSON("invalid_machine.json");
+        assertTrue(!validate.equals(SyntaxChecker.OK()));
+    }
+
+    @Test
+    public void invalidSameNameTransitions() {
+        String validate = validateJSON("invalid_same_name_transitions.json");
+        assertTrue(!validate.equals(SyntaxChecker.OK()));
+    }
+
+    @Test
+    public void severtalinitial() {
+        String validate = validateJSON("invalid_state_several_initial.json");
+        assertTrue(!validate.equals(SyntaxChecker.OK()));
+    }
+
+
+    /**
+     * Calling {@link Parser#validate(CFSMConfiguration)} function with parsed json by path
+     */
+    public String validateJSON(String path) {
+        String absPath = path(path);
+        Tuple2<Option<JsonObject>, String> res = SyntaxChecker.rawParse(absPath);
+        CFSMConfiguration configuration = Parser.parse(res._1.get());
+        return Parser.validate(configuration);
+    }
 }

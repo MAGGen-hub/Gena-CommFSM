@@ -44,7 +44,6 @@ object Mine {
       println("File loggers is not supported yet")
       return
     }
-
     mine(conf, log, Selectors.RandomSelector)
   }
 }

@@ -29,6 +29,7 @@ import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
@@ -38,6 +39,82 @@ import java.util.stream.Collectors;
  * Used for parsing given configuration file into {@link CFSMConfiguration}
  */
 public class Parser {
+
+
+    /**
+     * Checking for a two things:
+     * 1. All SHARED transitions with the same name have the same conditions
+     * 2. All machines should have exactly one initial state and at least one FINAL
+     * 3. All RECM and SEND machines is exists
+     *
+     * @return error report or OK
+     */
+    public static String validate(CFSMConfiguration config) {
+        StringBuilder result = new StringBuilder();
+
+        // 1. All SHARED transitions with the same name have the same conditions
+        long countOfBadSharedTransitions = config.machines
+                .values()
+                .stream()
+                .flatMap(machine -> machine.transitions.values().stream())
+                .filter(transition -> transition.type == TransitionType.SHARED)
+                .collect(Collectors.groupingBy(Transition::name))
+                .entrySet()
+                .stream()
+                .filter(entry -> {
+                    String firstCondition = entry.getValue().get(0).condition;
+                    for (Transition transition : entry.getValue()) {
+                        if (!transition.condition.equals(firstCondition))
+                            return true;
+                    }
+                    return false;
+                }).count();
+        if (countOfBadSharedTransitions != 0) {
+            result.append("ERROR: All SHARED transitions with the same name should have the same conditions");
+        }
+
+        // 2. All machines should have exactly one initial state and at least one FINAL
+        long countOfMachinesWithSeveralInitialStates = config.machines.values()
+                .stream()
+                .filter(machine -> {
+                    long initialStatesCount = machine.states
+                            .values()
+                            .stream()
+                            .filter(state -> state.type == StateType.INITIAL)
+                            .count();
+                    return initialStatesCount != 1;
+                }).count();
+
+        if (countOfMachinesWithSeveralInitialStates != 0) {
+            result.append("ERROR: All machines should have exactly one initial state and at least one FINAL");
+        }
+
+        // 3. All RECM and SEND machines is exists
+        long countOfBadRecmAndSendTransitions = config.machines
+                .values()
+                .stream()
+                .flatMap(machine -> machine.transitions.values().stream())
+                .filter(transition -> transition.type == TransitionType.RECM || transition.type == TransitionType.SENDM)
+                .filter(transition -> {
+                    String[] split = transition.condition.replaceAll("[!?]+", " ").trim().split(" ");
+                    for (String machineName : split) {
+                        if (config.machines.get(machineName) == null) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).count();
+
+        if (countOfBadRecmAndSendTransitions != 0) {
+            result.append("ERROR: All RECM and SEND machines should be exists");
+        }
+
+        if (result.length() == 0) {
+            return "OK";
+        } else {
+            return result.toString();
+        }
+    }
 
     /**
      * @param entries parsed to raw JsonObject config file
