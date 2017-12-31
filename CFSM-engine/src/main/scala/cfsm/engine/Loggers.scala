@@ -25,10 +25,11 @@ package cfsm.engine
 
 import cfsm.domain.Transition
 
+/**
+  * Loggers aimed to record mining results
+  */
 object Loggers {
   type Logger = Iterable[Transition] => Unit
 
-  val SimpleLogger: Logger = { transitions=>
-    println(transitions)
-  }
+  val SimpleLogger: Logger = _.foreach(println)
 }

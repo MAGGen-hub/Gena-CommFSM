@@ -1,0 +1,27 @@
+{
+  "protocol": "CFSM 0.2",
+  "automata": [
+    {
+      "name": "machine1",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "state1"
+        },
+        {
+          "type": "FINAL",
+          "name": "state2"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition1",
+          "type": "SENDM",
+          "condition": "!A",
+          "from": "state1",
+          "to": "state2"
+        }
+      ]
+    }
+  ]
+}

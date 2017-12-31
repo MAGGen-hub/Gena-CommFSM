@@ -24,10 +24,12 @@ package cfsm.parser;
 
 import cfsm.domain.*;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
@@ -38,73 +40,123 @@ import java.util.stream.Collectors;
  */
 public class Parser {
 
-    private final Vertx vertx;
 
-    public Parser(Vertx vertx) {
-        this.vertx = vertx;
+    /**
+     * Checking for a two things:
+     * 1. All SHARED transitions with the same name have the same conditions
+     * 2. All machines should have exactly one initial state and at least one FINAL
+     * 3. All RECM and SEND machines is exists
+     *
+     * @return error report or OK
+     */
+    public static String validate(CFSMConfiguration config) {
+        StringBuilder result = new StringBuilder();
+
+        // 1. All SHARED transitions with the same name have the same conditions
+        long countOfBadSharedTransitions = config.machines
+                .values()
+                .stream()
+                .flatMap(machine -> machine.transitions.values().stream())
+                .filter(transition -> transition.type == TransitionType.SHARED)
+                .collect(Collectors.groupingBy(Transition::name))
+                .entrySet()
+                .stream()
+                .filter(entry -> {
+                    String firstCondition = entry.getValue().get(0).condition;
+                    for (Transition transition : entry.getValue()) {
+                        if (!transition.condition.equals(firstCondition))
+                            return true;
+                    }
+                    return false;
+                }).count();
+        if (countOfBadSharedTransitions != 0) {
+            result.append("ERROR: All SHARED transitions with the same name should have the same conditions");
+        }
+
+        // 2. All machines should have exactly one initial state and at least one FINAL
+        long countOfMachinesWithSeveralInitialStates = config.machines.values()
+                .stream()
+                .filter(machine -> {
+                    long initialStatesCount = machine.states
+                            .values()
+                            .stream()
+                            .filter(state -> state.type == StateType.INITIAL)
+                            .count();
+                    return initialStatesCount != 1;
+                }).count();
+
+        if (countOfMachinesWithSeveralInitialStates != 0) {
+            result.append("ERROR: All machines should have exactly one initial state and at least one FINAL");
+        }
+
+        // 3. All RECM and SEND machines is exists
+        long countOfBadRecmAndSendTransitions = config.machines
+                .values()
+                .stream()
+                .flatMap(machine -> machine.transitions.values().stream())
+                .filter(transition -> transition.type == TransitionType.RECM || transition.type == TransitionType.SENDM)
+                .filter(transition -> {
+                    String[] split = transition.condition.replaceAll("[!?]+", " ").trim().split(" ");
+                    for (String machineName : split) {
+                        if (config.machines.get(machineName) == null) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).count();
+
+        if (countOfBadRecmAndSendTransitions != 0) {
+            result.append("ERROR: All RECM and SEND machines should be exists");
+        }
+
+        if (result.length() == 0) {
+            return "OK";
+        } else {
+            return result.toString();
+        }
     }
 
     /**
-     * @param path destination of configuration file
+     * @param entries parsed to raw JsonObject config file
      * @return parsed configuration file
      */
-    public CFSMConfiguration parse(String path) {
+    public static CFSMConfiguration parse(JsonObject entries) {
+        String protocol = entries.getString("protocol");
+        JsonArray automata = entries.getJsonArray("automata");
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        final CFSMConfiguration[] config = new CFSMConfiguration[1];
+        Map<String, Machine> machines = automata.stream()
+                .map(JsonObject.class::cast)
+                .map((JsonObject a) -> {
+                    // machine name
+                    String name = a.getString("name");
 
-        vertx.fileSystem().readFile(path, hf -> {
-            JsonObject entries = hf.result().toJsonObject();
+                    // parse states
+                    Map<String, State> states = a.getJsonArray("states").stream()
+                            .map(JsonObject.class::cast)
+                            .map(state -> {
 
-            String protocol = entries.getString("protocol");
-            JsonArray automata = entries.getJsonArray("automata");
+                                String type = state.getString("type").toUpperCase();
+                                String stateName = state.getString("name");
 
-            Map<String, Machine> machines = automata.stream()
-                    .map(JsonObject.class::cast)
-                    .map((JsonObject a) -> {
-                        // machine name
-                        String name = a.getString("name");
+                                return new State(stateName, StateType.valueOf(type));
+                            }).collect(Collectors.toConcurrentMap(State::name, Function.identity()));
 
-                        // parse states
-                        Map<String, State> states = a.getJsonArray("states").stream()
-                                .map(JsonObject.class::cast)
-                                .map(state -> {
+                    // parse transitions
+                    Map<String, Transition> transitions = a.getJsonArray("transitions").stream()
+                            .map(JsonObject.class::cast)
+                            .map(transition -> {
 
-                                    String type = state.getString("type").toUpperCase() ;
-                                    String stateName = state.getString("name");
+                                String transitionName = transition.getString("name");
+                                String type = transition.getString("type").toUpperCase();
+                                String condition = transition.getString("condition");
+                                State from = states.get(transition.getString("from"));
+                                State to = states.get(transition.getString("to"));
 
-                                    return new State(stateName, StateType.valueOf(type));
-                                }).collect(Collectors.toConcurrentMap(State::name, Function.identity()));
+                                return new Transition(transitionName, TransitionType.valueOf(type), condition, from, to);
+                            }).collect(Collectors.toConcurrentMap(Transition::name, Function.identity()));
 
-                        // parse transitions
-                        Map<String, Transition> transitions = a.getJsonArray("transitions").stream()
-                                .map(JsonObject.class::cast)
-                                .map(transition -> {
-
-                                    String transitionName = transition.getString("name");
-                                    String type = transition.getString("type").toUpperCase();
-                                    String condition = transition.getString("condition");
-                                    State from = states.get(transition.getString("from"));
-                                    State to = states.get(transition.getString("to"));
-
-                                    return new Transition(transitionName, TransitionType.valueOf(type), condition, from, to);
-                                }).collect(Collectors.toConcurrentMap(Transition::name, Function.identity()));
-
-                        return new Machine(name, states, transitions);
-                    }).collect(Collectors.toConcurrentMap(Machine::name, Function.identity()));
-
-
-            config[0] = new CFSMConfiguration(protocol, machines);
-            countDownLatch.countDown();
-        });
-
-        try {
-            // wait for parsing
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        return config[0];
+                    return new Machine(name, states, transitions);
+                }).collect(Collectors.toConcurrentMap(Machine::name, Function.identity()));
+        return new CFSMConfiguration(protocol, machines);
     }
 }

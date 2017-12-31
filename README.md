@@ -31,3 +31,106 @@ usage: cfsm
  -f,--file <arg>          path to file with description of model
  -h,--help                print help message
 ```
+
+### Example
+
+Let's say you have a configuration file like this:
+```json
+{
+  "protocol": "CFSM 0.2",
+  "automata": [
+    {
+      "name": "A",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "state1"
+        },
+        {
+          "type": "FINAL",
+          "name": "state2"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition1",
+          "type": "SENDM",
+          "condition": "!B",
+          "from": "state1",
+          "to": "state2"
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "state1"
+        },
+        {
+          "type": "GENERAL",
+          "name": "state2"
+        },
+        {
+          "type": "FINAL",
+          "name": "state3"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition2",
+          "type": "RECM",
+          "condition": "?A",
+          "from": "state1",
+          "to": "state2"
+        },
+        {
+          "name": "transition3",
+          "type": "SENDM",
+          "condition": "!C",
+          "from": "state2",
+          "to": "state3"
+        }
+      ]
+    },
+    {
+      "name": "C",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "state1"
+        },
+        {
+          "type": "FINAL",
+          "name": "state2"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition4",
+          "type": "RECM",
+          "condition": "?B",
+          "from": "state1",
+          "to": "state2"
+        }
+      ]
+    }
+  ]
+}
+```
+
+The file can be at _CFSM-engine/src/test/resources/cfsm2.json_. And you want to generate a logs, the system produce.
+
+That is how it can be done:
+```bash
+$ java -jar CFSM-dist/build/libs/cfsm-0.2.jar -f CFSM-engine/src/test/resources/cfsm2.json 
+Specified path to file is: CFSM-engine/src/test/resources/cfsm2.json
+Parsing configuration file......
+OK
+3 machines found
+A: state1 ---> state2
+B: state1 ---> state2
+B: state2 ---> state3
+C: state1 ---> state2
+```

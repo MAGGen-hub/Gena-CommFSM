@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import cfsm.domain.CFSMConfiguration
 import cfsm.parser.Parser
+import cfsm.syntax.SyntaxChecker
 import io.vertx.core.Vertx
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec}
 
@@ -35,7 +36,6 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec}
   */
 class TestBase extends FlatSpec with BeforeAndAfterEach with BeforeAndAfterAll {
   val vertx: Vertx = Vertx.vertx()
-  val parser = new Parser(vertx)
   var int = new AtomicInteger(1)
 
 
@@ -54,7 +54,7 @@ class TestBase extends FlatSpec with BeforeAndAfterEach with BeforeAndAfterAll {
     * @param handler      a function to call with config object
     */
   def withConfig(pathToConfig: String)(handler: CFSMConfiguration => Unit): Unit = {
-    val config = parser.parse(pathToConfig)
+    val config = Parser.parse(SyntaxChecker.rawParse(pathToConfig)._1.get)
     handler(config)
   }
 }
