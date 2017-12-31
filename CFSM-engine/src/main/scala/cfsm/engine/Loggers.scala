@@ -28,8 +28,30 @@ import cfsm.domain.Transition
 /**
   * Loggers aimed to record mining results
   */
+//noinspection ScalaStyle
 object Loggers {
   type Logger = Iterable[Transition] => Unit
 
+  /**
+    * Log everything to the console
+    */
   val SimpleLogger: Logger = _.foreach(println)
+
+  /**
+    * Log everything to specified file in CSV format
+    *
+    * @param file path to a file where the logs will be stored
+    */
+  def CSVLogger(file: String): Logger = {
+    ???
+  }
+
+  /**
+    * Log everything to specified file
+    *
+    * @param file path to a file where the logs will be stored
+    */
+  def SimpleFileLogger(file: String): Logger = {
+    ???
+  }
 }
