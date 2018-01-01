@@ -26,7 +26,6 @@ package cfsm
 import cfsm.domain._
 import cfsm.engine.Loggers.Logger
 import cfsm.engine.Selectors.Selector
-import cfsm.engine.{Loggers, _}
 
 import scala.collection.JavaConversions._
 

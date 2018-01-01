@@ -96,7 +96,7 @@ public class Main {
             System.out.println(String.format("%d machines found", configuration.machines.size()));
 
             // begin mining
-            Mine.begin(configuration, dest);
+            Mining.begin(configuration, dest);
         } catch (ParseException e) {
             System.out.println("Not able to parse given options. Please, use help for details");
             e.printStackTrace();

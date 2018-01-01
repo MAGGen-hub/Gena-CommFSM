@@ -91,6 +91,17 @@ subprojects {
     check.dependsOn sendCoverageToCodacy
 
 
+    // for cross java-scala compilation
+    sourceSets {
+        main {
+            scala {
+                srcDirs = ['src/main/scala', 'src/main/java']
+            }
+            java {
+                srcDirs = []
+            }
+        }
+    }
 }
 
 allprojects {

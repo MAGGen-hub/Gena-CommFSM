@@ -29,7 +29,7 @@ import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
 import cfsm.engine.{Loggers, Selectors, mine}
 
-object Mine {
+object Mining {
 
   /**
     * Entry point of mining

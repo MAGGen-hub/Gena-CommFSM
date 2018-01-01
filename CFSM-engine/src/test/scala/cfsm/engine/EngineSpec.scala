@@ -35,6 +35,7 @@ import Matchers._
 /**
   * Testing on [[cfsm.engine]] module
   */
+//noinspection ScalaStyle
 @RunWith(classOf[JUnitRunner])
 class EngineSpec extends TestBase {
 
@@ -42,21 +43,26 @@ class EngineSpec extends TestBase {
 
   it should "work on basic example" in {
     // there are only one machine with one transitions
-    val log: Logger = { trans => trans.toVector(0).name shouldBe "transition1" }
+    val log: Logger = {
+      case Nil =>
+      case trans => trans.toVector(0).name shouldBe "transition1"
+    }
     withConfig("cfsm.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
     }
   }
 
   it should "work on example with 2 machines communicated via message sending" in {
-    val log: Logger = { trans =>
-      // transitions should be triggered one by one
-      int.get() match {
-        case 1 => trans.toVector(0).name shouldBe "transition1"
-        case 2 => trans.toVector(0).name shouldBe "transition2"
-        case _ => 1 shouldBe 2 //fail a test
-      }
-      int.incrementAndGet()
+    val log: Logger = {
+      case Nil =>
+      case trans =>
+        // transitions should be triggered one by one
+        int.get() match {
+          case 1 => trans.toVector(0).name shouldBe "transition1"
+          case 2 => trans.toVector(0).name shouldBe "transition2"
+          case _ => 1 shouldBe 2 //fail a test
+        }
+        int.incrementAndGet()
     }
     withConfig("cfsm1.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
@@ -65,16 +71,18 @@ class EngineSpec extends TestBase {
 
   // a bit more complicated of precious test
   it should "work on example with 3 machines communicated via message sending" in {
-    val log: Logger = { trans =>
-      // transitions should be triggered one by one
-      int.get() match {
-        case 1 => trans.toVector(0).name shouldBe "transition1"
-        case 2 => trans.toVector(0).name shouldBe "transition2"
-        case 3 => trans.toVector(0).name shouldBe "transition3"
-        case 4 => trans.toVector(0).name shouldBe "transition4"
-        case _ => 1 shouldBe 2 //fail a test
-      }
-      int.incrementAndGet()
+    val log: Logger = {
+      case Nil =>
+      case trans =>
+        // transitions should be triggered one by one
+        int.get() match {
+          case 1 => trans.toVector(0).name shouldBe "transition1"
+          case 2 => trans.toVector(0).name shouldBe "transition2"
+          case 3 => trans.toVector(0).name shouldBe "transition3"
+          case 4 => trans.toVector(0).name shouldBe "transition4"
+          case _ => 1 shouldBe 2 //fail a test
+        }
+        int.incrementAndGet()
     }
     withConfig("cfsm2.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
@@ -82,15 +90,17 @@ class EngineSpec extends TestBase {
   }
 
   it should "handle transitions with the same name" in {
-    val log: Logger = { trans: Iterable[Transition] =>
-      // triggered 2 transitions at the same time and only once
-      int.get() match {
-        case 1 =>
-          trans.size shouldBe 2
-          trans.foreach(transition => transition.name shouldBe "transition1")
-        case _ => 1 shouldBe 2 //fail a test
-      }
-      int.incrementAndGet()
+    val log: Logger = {
+      case Nil =>
+      case trans =>
+        // triggered 2 transitions at the same time and only once
+        int.get() match {
+          case 1 =>
+            trans.size shouldBe 2
+            trans.foreach(transition => transition.name shouldBe "transition1")
+          case _ => 1 shouldBe 2 //fail a test
+        }
+        int.incrementAndGet()
     }
     withConfig("cfsm_same_name_transition.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
@@ -100,8 +110,10 @@ class EngineSpec extends TestBase {
   it should "handle transitions with the same name when condition is not fine" in {
 
     // the function should not be called in this case
-    val log: Logger = { trans: Iterable[Transition] =>
-      1 shouldBe 2 //fail a test
+    val log: Logger = {
+      case Nil =>
+      case trans =>
+        1 shouldBe 2 //fail a test
     }
 
     withConfig("cfsm_same_name_transition_no_actions.json") { config: CFSMConfiguration =>
