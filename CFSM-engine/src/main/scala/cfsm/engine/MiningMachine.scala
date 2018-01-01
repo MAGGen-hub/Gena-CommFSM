@@ -23,7 +23,7 @@
 
 package cfsm.engine
 
-import cfsm.domain.{Machine, State, Transition, TransitionType}
+import cfsm.domain._
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -46,33 +46,27 @@ case class MiningMachine(machineModel: Machine) {
     * @return is operation successful
     */
   def goOnTransition(transition: Transition)
-                    (implicit allMachines: Map[String, MiningMachine]): Boolean = {
-    val response = transition.from.name() == state.name()
-
-    if (response) {
-      transition.`type` match {
-        case TransitionType.PRIVATE | TransitionType.SHARED => // nothing to do
-        case TransitionType.RECM =>
-          val machineName = transition.condition.substring(1)
-          val currentMailCount: Int = mailBox(machineName)
-          mailBox.put(machineName, currentMailCount - 1)
-        case TransitionType.SENDM =>
-          val machineName = transition.condition.substring(1)
-          val receiver = allMachines(machineName)
-          // send directly to the mailbox of target
-          receiver.mailBox.get(this) match {
-            case None => receiver.mailBox.put(this, 1)
-            case Some(count) => receiver.mailBox.put(this, count + 1)
-          }
-      }
-      state = transition.to
+                    (implicit allMachines: Map[String, MiningMachine]): Unit = {
+    transition.`type` match {
+      case TransitionType.PRIVATE | TransitionType.SHARED => // nothing to do
+      case TransitionType.RECM =>
+        val machineName = transition.condition.substring(1)
+        val currentMailCount: Int = mailBox(machineName)
+        mailBox.put(machineName, currentMailCount - 1)
+      case TransitionType.SENDM =>
+        val machineName = transition.condition.substring(1)
+        val receiver = allMachines(machineName)
+        // send directly to the mailbox of target
+        receiver.mailBox.get(this) match {
+          case None => receiver.mailBox.put(this, 1)
+          case Some(count) => receiver.mailBox.put(this, count + 1)
+        }
     }
-
-    response
+    state = transition.to
   }
 
   /**
-    * Check for ability to go to given state
+    * Check for ability to go on given transition
     *
     * @param transition  transition to go
     * @param allMachines link to all machines
@@ -81,19 +75,25 @@ case class MiningMachine(machineModel: Machine) {
   def canGoOnTransition(transition: Transition)
                        (implicit allMachines: Map[String, MiningMachine]): Boolean = {
     transition.`type` match {
-      case TransitionType.PRIVATE | TransitionType.SHARED | TransitionType.SENDM =>
-        true
+
+      // if we are not in appropriate state
+      case _ if transition.from.name() != state.name() => false
+      // if machine in final state then it is not possible to go
+      case _ if state.`type` == StateType.FINAL => false
+
+      // for these it just does not matter
+      case TransitionType.PRIVATE | TransitionType.SHARED | TransitionType.SENDM => true
+
       case TransitionType.RECM =>
+        // machine we going to receive a message from
         val machineName = transition.condition.substring(1)
-        val resVal = mailBox.getOrElseUpdate(allMachines(machineName), 0)
+
+        // initialize mailbox if it is empty
+        mailBox.getOrElseUpdate(allMachines(machineName), 0)
         val currentMailCount: Int = mailBox(machineName)
-        if (currentMailCount > 0) {
-          mailBox.update(allMachines(machineName), resVal - 1)
-          true
-        }
-        else {
-          false
-        }
+
+        // are we are we able to receive?
+        currentMailCount > 0
     }
   }
 
