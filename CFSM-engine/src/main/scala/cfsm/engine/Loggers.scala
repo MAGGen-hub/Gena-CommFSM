@@ -80,6 +80,7 @@ object Loggers {
           fileAppender.append(transition.condition)
           fileAppender.append(delim)
           fileAppender.append(outRFC3339)
+          fileAppender.append(delim)
           fileAppender.append(EOL)
         }
     }
