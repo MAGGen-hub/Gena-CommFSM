@@ -27,7 +27,7 @@ import cfsm.domain._
 import cfsm.engine.Loggers.Logger
 import cfsm.engine.Selectors.Selector
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 package object engine {
@@ -60,7 +60,7 @@ package object engine {
     */
   def mine(config: CFSMConfiguration, log: Logger, select: Selector): Unit = {
 
-    implicit val miningMachines: Map[String, MiningMachine] = config.machines.map(pair => (pair._1, MiningMachine(pair._2))).toMap
+    implicit val miningMachines: Map[String, MiningMachine] = config.machines.asScala.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)
 
     // while there are a place to go
