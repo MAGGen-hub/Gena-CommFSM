@@ -68,7 +68,7 @@ object Loggers {
       case Nil =>
         fileAppender.close()
       case transitions =>
-        transitions.foreach(transition => fileAppender.append(transition.toString))
+        transitions.foreach(transition => fileAppender.append(transition.toString + "\n"))
     }
   }
 
