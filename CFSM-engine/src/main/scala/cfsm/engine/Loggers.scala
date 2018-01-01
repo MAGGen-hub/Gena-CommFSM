@@ -24,7 +24,7 @@
 package cfsm.engine
 
 
-import java.io.{BufferedWriter, File, FileWriter}
+import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter}
 
 import cfsm.domain.Transition
 
@@ -45,14 +45,14 @@ object Loggers {
     *
     * @param file path to a file where the logs will be stored
     */
-  def CSVLogger(file: File): Logger = {
+  def CSVLogger(file: File, delimer: String): Logger = {
     val fileAppender = appender(file)
 
     {
       case Nil =>
         fileAppender.close()
       case transitions =>
-        fileAppender.append("")
+        fileAppender.append("case-id;event-id;event-type;timestamp;")
     }
   }
 
@@ -84,7 +84,6 @@ object Loggers {
     if (!file.exists) {
       file.createNewFile
     }
-    val fw = new FileWriter(file, true)
-    new BufferedWriter(fw)
+    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"))
   }
 }
