@@ -24,6 +24,7 @@ group 'CFSM'
 
 ext {
     scalaVersion='2.12'
+    jodaTimeVersion='2.9.9'
     scalaVersionFull="$scalaVersion.4"
     vertxVersion = '3.5.0'
     slf4jVersion = '1.7.25'

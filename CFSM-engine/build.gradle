@@ -23,5 +23,6 @@
 
 dependencies {
     compile project(':CFSM-domain')
+    compile group: 'joda-time', name: 'joda-time', version: jodaTimeVersion
     testCompile project(':CFSM-parser')
 }

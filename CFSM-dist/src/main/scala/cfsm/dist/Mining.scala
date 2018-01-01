@@ -24,6 +24,7 @@
 package cfsm.dist
 
 import java.io.File
+import java.util.concurrent.atomic.AtomicLong
 
 import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
@@ -34,12 +35,13 @@ object Mining {
   /**
     * Entry point of mining
     */
-  def begin(conf: CFSMConfiguration, destination: String): Unit = {
+  def begin(conf: CFSMConfiguration, destination: String, csv: Boolean, caseId: AtomicLong, eventId: AtomicLong): Unit = {
     // choosing a logger
     val log: Logger = if (destination == null) {
       Loggers.SimpleLogger
     } else {
-      Loggers.SimpleFileLogger(new File(destination))
+      val file = new File(destination)
+      if (csv) Loggers.CSVLogger(file, ";", caseId, eventId) else Loggers.SimpleFileLogger(file)
     }
     mine(conf, log, Selectors.RandomSelector)
   }
