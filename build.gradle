@@ -95,6 +95,7 @@ subprojects {
     sourceSets {
         main {
             scala {
+                //noinspection GroovyAssignabilityCheck
                 srcDirs = ['src/main/scala', 'src/main/java']
             }
             java {
