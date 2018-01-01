@@ -46,7 +46,7 @@ package object engine {
         case (_, transitions) =>
           val vector = transitions.toVector
           vector(0).`type` match {
-            // only if shared condition in fine
+            // only if shared condition is fine
             case TransitionType.SHARED => vector.size >= vector(0).condition.toInt
             case _ => true
           }
@@ -83,5 +83,8 @@ package object engine {
       // refresh enabled transitions
       enabledTransitions = getEnabledTransitions(miningMachines)
     }
+
+    // report end of mining
+    log(List())
   }
 }

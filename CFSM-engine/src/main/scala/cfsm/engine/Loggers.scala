@@ -23,6 +23,9 @@
 
 package cfsm.engine
 
+
+import java.io.{BufferedWriter, File, FileWriter}
+
 import cfsm.domain.Transition
 
 /**
@@ -42,8 +45,15 @@ object Loggers {
     *
     * @param file path to a file where the logs will be stored
     */
-  def CSVLogger(file: String): Logger = {
-    ???
+  def CSVLogger(file: File): Logger = {
+    val fileAppender = appender(file)
+
+    {
+      case Nil =>
+        fileAppender.close()
+      case transitions =>
+        fileAppender.append("")
+    }
   }
 
   /**
@@ -51,7 +61,30 @@ object Loggers {
     *
     * @param file path to a file where the logs will be stored
     */
-  def SimpleFileLogger(file: String): Logger = {
-    ???
+  def SimpleFileLogger(file: File): Logger = {
+    val fileAppender = appender(file)
+
+    {
+      case Nil =>
+        fileAppender.close()
+      case transitions =>
+        transitions.foreach(transition => fileAppender.append(transition.toString))
+    }
+  }
+
+
+  /**
+    * Return instance of [[BufferedWriter]]
+    *
+    * @param file path to file to open
+    * @return object used for appending
+    */
+  def appender(file: File): BufferedWriter = {
+    // create file
+    if (!file.exists) {
+      file.createNewFile
+    }
+    val fw = new FileWriter(file, true)
+    new BufferedWriter(fw)
   }
 }

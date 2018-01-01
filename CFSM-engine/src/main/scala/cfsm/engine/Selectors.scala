@@ -25,9 +25,15 @@ package cfsm.engine
 
 import scala.util.Random
 
+/**
+  * Selectors are responsible for decisions where to go
+  */
 object Selectors {
   type Selector = Iterable[String] => String
 
+  /**
+    * Decides to go on any transition
+    */
   val RandomSelector: Selector = { strings =>
     val index = Random.nextInt() % strings.size
     strings.toVector(index)

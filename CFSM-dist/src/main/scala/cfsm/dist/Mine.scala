@@ -23,6 +23,8 @@
 
 package cfsm.dist
 
+import java.io.File
+
 import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
 import cfsm.engine.{Loggers, Selectors, mine}
@@ -37,8 +39,7 @@ object Mine {
     val log: Logger = if (destination == null) {
       Loggers.SimpleLogger
     } else {
-      println("File loggers is not supported yet")
-      return
+      Loggers.SimpleFileLogger(new File(destination))
     }
     mine(conf, log, Selectors.RandomSelector)
   }
