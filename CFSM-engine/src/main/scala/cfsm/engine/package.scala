@@ -26,27 +26,9 @@ package cfsm
 import cfsm.domain._
 import cfsm.engine.Loggers.Logger
 import cfsm.engine.Selectors.Selector
-import cfsm.engine.{Loggers, _}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
-//noinspection ScalaStyle
-object Mine {
-
-  /**
-    * Entry point of mining
-    */
-  def begin(conf: CFSMConfiguration, destination: String): Unit = {
-    // choosing a logger
-    val log: Logger = if (destination == null) {
-      Loggers.SimpleLogger
-    } else {
-      println("File loggers is not supported yet")
-      return
-    }
-    mine(conf, log, Selectors.RandomSelector)
-  }
-}
 
 package object engine {
 
@@ -63,7 +45,7 @@ package object engine {
         case (_, transitions) =>
           val vector = transitions.toVector
           vector(0).`type` match {
-            // only if shared condition in fine
+            // only if shared condition is fine
             case TransitionType.SHARED => vector.size >= vector(0).condition.toInt
             case _ => true
           }
@@ -78,7 +60,7 @@ package object engine {
     */
   def mine(config: CFSMConfiguration, log: Logger, select: Selector): Unit = {
 
-    implicit val miningMachines: Map[String, MiningMachine] = config.machines.map(pair => (pair._1, MiningMachine(pair._2))).toMap
+    implicit val miningMachines: Map[String, MiningMachine] = config.machines.asScala.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)
 
     // while there are a place to go
@@ -100,5 +82,8 @@ package object engine {
       // refresh enabled transitions
       enabledTransitions = getEnabledTransitions(miningMachines)
     }
+
+    // report end of mining
+    log(List())
   }
 }

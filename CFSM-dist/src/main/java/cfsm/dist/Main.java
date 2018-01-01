@@ -22,7 +22,6 @@
  */
 package cfsm.dist;
 
-import cfsm.Mine;
 import cfsm.domain.CFSMConfiguration;
 import cfsm.parser.Parser;
 import cfsm.syntax.SyntaxChecker;
@@ -32,6 +31,7 @@ import scala.Option;
 import scala.Tuple2;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
     public static void main(String[] args) {
@@ -44,9 +44,10 @@ public class Main {
             // options specification
             Options options = new Options();
 
-            options.addOption("f", "file", true, "path to file with description of model");
-            options.addOption("h", "help", false, "print help message");
-            options.addOption("d", "destination", true, "path where generated logs will be stored");
+            options.addOption("f", "file", true, "Path to file with description of model");
+            options.addOption("h", "help", false, "Print help message");
+            options.addOption("d", "destination", true, "Path where generated logs will be stored");
+            options.addOption("csv", false, "Format of logs is csv. Work only with '-d' flag");
 
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
@@ -60,6 +61,7 @@ public class Main {
 
             String file = cmd.getOptionValue("file");
             String dest = cmd.getOptionValue("destination");
+            Boolean csv = cmd.hasOption("csv");
 
             // check for -file option
             if (file == null) {
@@ -96,8 +98,11 @@ public class Main {
 
             System.out.println(String.format("%d machines found", configuration.machines.size()));
 
+            AtomicLong caseId = new AtomicLong(0);
+            AtomicLong eventId = new AtomicLong(0);
+
             // begin mining
-            Mine.begin(configuration, dest);
+            Mining.begin(configuration, dest, csv, caseId, eventId);
         } catch (ParseException e) {
             System.out.println("Not able to parse given options. Please, use help for details");
             e.printStackTrace();

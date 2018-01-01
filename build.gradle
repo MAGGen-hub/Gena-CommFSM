@@ -24,6 +24,7 @@ group 'CFSM'
 
 ext {
     scalaVersion='2.12'
+    jodaTimeVersion='2.9.9'
     scalaVersionFull="$scalaVersion.4"
     vertxVersion = '3.5.0'
     slf4jVersion = '1.7.25'
@@ -91,6 +92,18 @@ subprojects {
     check.dependsOn sendCoverageToCodacy
 
 
+    // for cross java-scala compilation
+    sourceSets {
+        main {
+            scala {
+                //noinspection GroovyAssignabilityCheck
+                srcDirs = ['src/main/scala', 'src/main/java']
+            }
+            java {
+                srcDirs = []
+            }
+        }
+    }
 }
 
 allprojects {

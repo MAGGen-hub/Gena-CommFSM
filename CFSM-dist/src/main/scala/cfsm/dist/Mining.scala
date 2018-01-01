@@ -21,21 +21,28 @@
 *  SOFTWARE.
 */
 
-package cfsm.engine
+package cfsm.dist
 
-import scala.util.Random
+import java.io.File
+import java.util.concurrent.atomic.AtomicLong
 
-/**
-  * Selectors are responsible for decisions where to go
-  */
-object Selectors {
-  type Selector = Iterable[String] => String
+import cfsm.domain.CFSMConfiguration
+import cfsm.engine.Loggers.Logger
+import cfsm.engine.{Loggers, Selectors, mine}
+
+object Mining {
 
   /**
-    * Decides to go on any transition
+    * Entry point of mining
     */
-  val RandomSelector: Selector = { strings =>
-    val index = Random.nextInt() % strings.size
-    strings.toVector(index)
+  def begin(conf: CFSMConfiguration, destination: String, csv: Boolean, caseId: AtomicLong, eventId: AtomicLong): Unit = {
+    // choosing a logger
+    val log: Logger = if (destination == null) {
+      Loggers.SimpleLogger
+    } else {
+      val file = new File(destination)
+      if (csv) Loggers.CSVLogger(file, ";", caseId, eventId) else Loggers.SimpleFileLogger(file)
+    }
+    mine(conf, log, Selectors.RandomSelector)
   }
 }
