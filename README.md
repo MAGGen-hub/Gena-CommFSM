@@ -16,9 +16,9 @@ The project uses gradle as a build system. In order to build cli jar use:
 # build jar
 $ ./gradlew build
 # run jar 
-$ java -jar CFSM-dist/build/libs/cfsm-0.2.jar -help
+$ java -jar CFSM-dist/build/libs/cfsm-1.0.1.jar -help
 # example usage with test config
-$ java -jar CFSM-dist/build/libs/cfsm-0.2.jar -f ./CFSM-parser/src/test/resources/cfsm.json 
+$ java -jar CFSM-dist/build/libs/cfsm-1.0.1.jar -f ./CFSM-parser/src/test/resources/cfsm.json 
 ```
 
 Note: make sure you have java 8 installed.
@@ -37,7 +37,7 @@ usage: cfsm
 Let's say you have a configuration file like this:
 ```json
 {
-  "protocol": "CFSM 0.2",
+  "protocol": "CFSM 1.0.1",
   "automata": [
     {
       "name": "A",
@@ -124,7 +124,7 @@ The file can be at _CFSM-engine/src/test/resources/cfsm2.json_. And you want to 
 
 That is how it can be done:
 ```bash
-$ java -jar CFSM-dist/build/libs/cfsm-0.2.jar -f CFSM-engine/src/test/resources/cfsm2.json 
+$ java -jar CFSM-dist/build/libs/cfsm-1.0.1.jar -f CFSM-engine/src/test/resources/cfsm2.json 
 Specified path to file is: CFSM-engine/src/test/resources/cfsm2.json
 Parsing configuration file......
 OK

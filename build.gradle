@@ -23,9 +23,13 @@
 group 'CFSM'
 
 ext {
-    scalaVersion='2.12'
-    jodaTimeVersion='2.9.9'
-    scalaVersionFull="$scalaVersion.4"
+    // CFSM project family version
+    projectReleaseVersion = '1.0.1'
+
+    // used libs versions
+    scalaVersion = '2.12'
+    jodaTimeVersion = '2.9.9'
+    scalaVersionFull = "$scalaVersion.4"
     vertxVersion = '3.5.0'
     slf4jVersion = '1.7.25'
     commonsCliVersion = '1.4'
@@ -91,7 +95,6 @@ subprojects {
     // sending code coverage report
     check.dependsOn sendCoverageToCodacy
 
-
     // for cross java-scala compilation
     sourceSets {
         main {
@@ -107,7 +110,7 @@ subprojects {
 }
 
 allprojects {
-    version '0.2'
+    version projectReleaseVersion
 }
 
 task wrapper(type: Wrapper) {
