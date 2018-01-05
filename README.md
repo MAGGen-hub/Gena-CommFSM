@@ -37,7 +37,7 @@ usage: cfsm
 Let's say you have a configuration file like this:
 ```json
 {
-  "protocol": "CFSM 1.0.1",
+  "protocol": "CFSM 0.2",
   "automata": [
     {
       "name": "A",
