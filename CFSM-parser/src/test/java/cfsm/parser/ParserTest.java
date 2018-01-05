@@ -48,8 +48,6 @@ public class ParserTest extends ParserHarness {
 
         Machine machine = parse.machines.get("machine1");
 
-        assertTrue(parse.protocol.equals("CFSM 0.2"));
-
         assertTrue(parse.machines.size() == 1);
         assertTrue(machine.name.equals("machine1"));
         assertTrue(machine.states.size() == 2);

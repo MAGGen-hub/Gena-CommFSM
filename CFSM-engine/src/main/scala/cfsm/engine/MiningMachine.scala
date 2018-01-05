@@ -24,6 +24,7 @@
 package cfsm.engine
 
 import cfsm.domain._
+import cfsm.engine.Loggers.SPACE
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -50,9 +51,17 @@ case class MiningMachine(machineModel: Machine) {
     transition.`type` match {
       case TransitionType.PRIVATE | TransitionType.SHARED => // nothing to do
       case TransitionType.RECM =>
-        val machineName = transition.condition.substring(1)
+
+        // we sure that the valued is present since it was ensured by MiningMachine#canGoOnTransition
+        val machineName = transition.condition.replace("?", SPACE).trim.split(SPACE).view
+          // take a random available mailbox
+          .filter(name => allMachines.get(name).isDefined)
+          .take(1)
+          .head
+
         val currentMailCount: Int = mailBox(machineName)
         mailBox.put(machineName, currentMailCount - 1)
+
       case TransitionType.SENDM =>
         val machineName = transition.condition.substring(1)
         val receiver = allMachines(machineName)
@@ -83,17 +92,24 @@ case class MiningMachine(machineModel: Machine) {
 
       // for these it just does not matter
       case TransitionType.PRIVATE | TransitionType.SHARED | TransitionType.SENDM => true
-
       case TransitionType.RECM =>
-        // machine we going to receive a message from
-        val machineName = transition.condition.substring(1)
 
-        // initialize mailbox if it is empty
-        mailBox.getOrElseUpdate(allMachines(machineName), 0)
-        val currentMailCount: Int = mailBox(machineName)
+        // "?A?B?C" -> List("A","B","C")
+        transition.condition.replace("?", SPACE).trim.split(SPACE).view
+          // take random available mailbox
+          .filter(name => allMachines.get(name).isDefined)
+          .take(1)
+          .headOption match {
+          case None => false
+          case Some(machineName) =>
 
-        // are we are we able to receive?
-        currentMailCount > 0
+            // initialize mailbox if it is empty
+            mailBox.getOrElseUpdate(allMachines(machineName), 0)
+            val currentMailCount: Int = mailBox(machineName)
+
+            // are we are we able to receive?
+            currentMailCount > 0
+        }
     }
   }
 
