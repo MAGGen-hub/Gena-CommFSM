@@ -23,14 +23,11 @@
 
 package cfsm.engine
 
-import java.util.concurrent.atomic.AtomicInteger
-
-import cfsm.domain.{CFSMConfiguration, Transition}
+import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
 import org.junit.runner.RunWith
+import org.scalatest.Matchers._
 import org.scalatest.junit.JUnitRunner
-import org.scalatest._
-import Matchers._
 
 /**
   * Testing on [[cfsm.engine]] module
@@ -117,6 +114,26 @@ class EngineSpec extends TestBase {
     }
 
     withConfig("cfsm_same_name_transition_no_actions.json") { config: CFSMConfiguration =>
+      mine(config, log, Selectors.RandomSelector)
+    }
+  }
+
+  it should "handle RECM transitions with several machines to receive messages from" in {
+
+    val log: Logger = {
+      case Nil =>
+      case trans =>
+        int.get() match {
+          case 1 =>
+            trans.foreach(transition => transition.name shouldBe "transition1")
+          case 2 =>
+            trans.foreach(transition => transition.name shouldBe "transition2")
+          case _ => 1 shouldBe 2 //fail a test
+        }
+        int.incrementAndGet()
+    }
+
+    withConfig("several_rec_machines.json") { config: CFSMConfiguration =>
       mine(config, log, Selectors.RandomSelector)
     }
   }
