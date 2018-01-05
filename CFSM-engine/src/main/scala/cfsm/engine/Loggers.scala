@@ -44,6 +44,7 @@ object Loggers {
   val SimpleLogger: Logger = _.foreach(println)
 
   val EOL = "\n"
+  val SPACE = " "
 
   /**
     * Log everything to specified file in CSV format
