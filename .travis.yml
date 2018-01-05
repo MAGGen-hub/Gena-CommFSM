@@ -5,4 +5,4 @@ jdk:
   - oraclejdk9
 
 script:
-  - gradle build -i
+  - ./build.sh
