@@ -48,6 +48,7 @@ public class Main {
             options.addOption("h", "help", false, "Print help message");
             options.addOption("d", "destination", true, "Path where generated logs will be stored");
             options.addOption("csv", false, "Format of logs is csv. Work only with '-d' flag");
+            options.addOption("t", false, "Format of logs is csv. Work only with '-d' flag");
 
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);

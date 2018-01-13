@@ -42,61 +42,14 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'scala'
-    apply plugin: 'jacoco'
-
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url "http://dl.bintray.com/typesafe/maven-releases" }
-        mavenLocal()
-    }
-
-    configurations { codacy }
 
     dependencies {
         // scala std lib
         compile group: 'org.scala-lang', name: 'scala-library', version: scalaVersionFull
-        // code coverage
-        codacy group: 'com.codacy', name: 'codacy-coverage-reporter', version: codacyReporterVersion
-
         // test
         testCompile group: 'junit', name: 'junit', version: junitVersion
         testCompile group: 'org.scalatest', name: "scalatest_$scalaVersion", version: scalaTestVersion
-
     }
-
-    // task for pushing code coverage
-    task sendCoverageToCodacy(type: JavaExec, dependsOn: jacocoTestReport) {
-        main = "com.codacy.CodacyCoverageReporter"
-        classpath = configurations.codacy
-        args = [
-                "-l",
-                "Java",
-                "-r",
-                "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-        ]
-
-        // the condition for task run
-        onlyIf {
-            file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml").exists() &&
-                    System.env['CODACY_PROJECT_TOKEN'] != null
-        }
-    }
-
-    // test coverage
-    jacocoTestReport {
-        additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
-        sourceDirectories = files(sourceSets.main.allSource.srcDirs)
-        classDirectories = files(sourceSets.main.output)
-        reports {
-            html.enabled = true
-            xml.enabled = true
-            csv.enabled = false
-        }
-    }
-
-    // sending code coverage report
-    check.dependsOn sendCoverageToCodacy
 
     // for cross java-scala compilation
     sourceSets {
@@ -112,20 +65,37 @@ subprojects {
     }
 }
 
-task jacocoRootReport(type: JacocoReport) {
-    dependsOn = subprojects.test
-    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories = files(subprojects.sourceSets.main.output)
-    executionData = files(subprojects.jacocoTestReport.executionData)
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
     reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
+        xml.enabled true
+        xml.setDestination(new File("${buildDir}/reports/jacoco/report.xml"))
+        html.enabled false
+        csv.enabled false
     }
 }
 
+codeCoverageReport.dependsOn {
+    subprojects*.test
+}
+
 allprojects {
+
+    apply plugin: 'jacoco'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "http://dl.bintray.com/typesafe/maven-releases" }
+        mavenLocal()
+    }
+
+
     version projectReleaseVersion
 }
 
