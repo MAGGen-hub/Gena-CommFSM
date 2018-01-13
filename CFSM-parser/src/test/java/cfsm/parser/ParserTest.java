@@ -120,8 +120,14 @@ public class ParserTest extends ParserHarness {
     }
 
     @Test
-    public void severtalinitial() {
+    public void severtalInitial() {
         String validate = validateJSON("invalid_state_several_initial.json");
+        assertTrue(!validate.equals(SyntaxChecker.OK()));
+    }
+
+    @Test
+    public void outboundFromFinal() {
+        String validate = validateJSON("outbound_from_final.json");
         assertTrue(!validate.equals(SyntaxChecker.OK()));
     }
 
