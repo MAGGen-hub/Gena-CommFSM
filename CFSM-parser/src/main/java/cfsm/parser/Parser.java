@@ -39,8 +39,9 @@ public class Parser {
     /**
      * Checking for a two things:
      * 1. All SHARED transitions with the same name have the same conditions
-     * 2. All machines should have exactly one initial state and at least one FINAL
+     * 2. All machines should have exactly one initial state
      * 3. All RECM and SEND machines is exists
+     * 4. Final states should not have outbound transitions
      *
      * @return error report or OK
      */
@@ -68,7 +69,7 @@ public class Parser {
             result.append("ERROR: All SHARED transitions with the same name should have the same conditions");
         }
 
-        // 2. All machines should have exactly one initial state and at least one FINAL
+        // 2. All machines should have exactly one initial state
         long countOfMachinesWithSeveralInitialStates = config.machines.values()
                 .stream()
                 .filter(machine -> {
@@ -81,7 +82,7 @@ public class Parser {
                 }).count();
 
         if (countOfMachinesWithSeveralInitialStates != 0) {
-            result.append("ERROR: All machines should have exactly one initial state and at least one FINAL");
+            result.append("ERROR: All machines should have exactly one initial state");
         }
 
         // 3. All RECM and SEND machines is exists
@@ -102,6 +103,18 @@ public class Parser {
 
         if (countOfBadRecmAndSendTransitions != 0) {
             result.append("ERROR: All RECM and SEND machines should be exists");
+        }
+
+        // 4. Final states should not have any outbound transitions
+        long finalStateWithOutBoundTransitions = config.machines
+                .values()
+                .stream()
+                .flatMap(machine -> machine.states.values().stream())
+                .filter(state -> state.type == StateType.FINAL && state.outboundTransitions().size() != 0)
+                .count();
+
+        if (finalStateWithOutBoundTransitions != 0) {
+            result.append("ERROR: Final states should not have any outbound transitions");
         }
 
         if (result.length() == 0) {
