@@ -28,8 +28,8 @@ import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter}
 import java.util.concurrent.atomic.AtomicLong
 
 import cfsm.domain.Transition
-import org.joda.time.{DateTime, DateTimeZone}
 import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.{DateTime, DateTimeZone}
 
 /**
   * Loggers aimed to record mining results
