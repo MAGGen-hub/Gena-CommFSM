@@ -22,10 +22,6 @@
  */
 package cfsm.parser;
 
-import io.vertx.core.Vertx;
-import org.junit.After;
-import org.junit.Before;
-
 import java.util.Objects;
 
 /**

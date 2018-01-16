@@ -48,8 +48,6 @@ public class ParserTest extends ParserHarness {
 
         Machine machine = parse.machines.get("machine1");
 
-        assertTrue(parse.protocol.equals("CFSM 0.2"));
-
         assertTrue(parse.machines.size() == 1);
         assertTrue(machine.name.equals("machine1"));
         assertTrue(machine.states.size() == 2);
@@ -122,8 +120,14 @@ public class ParserTest extends ParserHarness {
     }
 
     @Test
-    public void severtalinitial() {
+    public void severtalInitial() {
         String validate = validateJSON("invalid_state_several_initial.json");
+        assertTrue(!validate.equals(SyntaxChecker.OK()));
+    }
+
+    @Test
+    public void outboundFromFinal() {
+        String validate = validateJSON("outbound_from_final.json");
         assertTrue(!validate.equals(SyntaxChecker.OK()));
     }
 

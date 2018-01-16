@@ -76,14 +76,11 @@ object SyntaxChecker {
   //  val SharedTransitionSameValueForSameNamesChecker
   val TopLevelOnlyProtocolAndMachines: JsonObject => String = {
     config =>
-      val topLevelNames = config.fieldNames().asScala.toVector
-      if (!topLevelNames.contains("protocol")) {
-        "Top level elements should have \"protocol\" field"
-      } else if (!topLevelNames.contains(Automata)) {
-        s"Top level elements should have $Automata field"
-      }
-      else {
-        OK
+
+      config.fieldNames().asScala match {
+        case fields if !fields.contains("protocol") => "Top level elements should have \"protocol\" field"
+        case fields if !fields.contains(Automata) => s"Top level elements should have $Automata field"
+        case _ => OK
       }
   }
 

@@ -23,7 +23,7 @@
 
 package cfsm.engine
 
-import scala.util.Random
+import java.security.SecureRandom
 
 /**
   * Selectors are responsible for decisions where to go
@@ -34,8 +34,12 @@ object Selectors {
   /**
     * Decides to go on any transition
     */
-  val RandomSelector: Selector = { strings =>
-    val index = Random.nextInt() % strings.size
-    strings.toVector(index)
+  val RandomSelector: Selector = {
+
+    val random = new SecureRandom();
+    { strings =>
+      val index = random.nextInt() % strings.size
+      strings.toVector(index)
+    }
   }
 }
