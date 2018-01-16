@@ -67,20 +67,21 @@ object Loggers {
         val outRFC3339 = fmt.print(dt)
 
         transitions.foreach { transition =>
-          fileAppender.append(usedCaseId.toString)
-          fileAppender.append(delim)
-          fileAppender.append(usedEventId.toString)
-          fileAppender.append(delim)
-          fileAppender.append(transition.machine.name)
-          fileAppender.append("-")
-          fileAppender.append(transition.from.name())
-          fileAppender.append("->")
-          fileAppender.append(transition.to.name())
-          fileAppender.append("-")
-          fileAppender.append(transition.condition)
-          fileAppender.append(delim)
-          fileAppender.append(outRFC3339)
-          fileAppender.append(EOL)
+
+          val resultString = new StringBuilder()
+
+          resultString.append(usedCaseId.toString)
+          resultString.append(delim)
+          resultString.append(usedEventId.toString)
+          resultString.append(delim)
+          resultString.append(transition.machine.name)
+          resultString.append("-")
+          resultString.append(transition.name())
+          resultString.append(delim)
+          resultString.append(outRFC3339)
+          resultString.append(EOL)
+
+          fileAppender.append(resultString.toString())
         }
     }
   }
