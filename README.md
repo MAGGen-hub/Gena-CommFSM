@@ -31,6 +31,10 @@ usage: cfsm
  -d,--destination <arg>   Path where generated logs will be stored
  -f,--file <arg>          Path to file with description of model
  -h,--help                Print help message
+ -sc,--show-conditions    Print conditions in csv log. Works only with
+                          '-d' and '-csv' flag
+ -ss,--show-states        Print states in csv log. Works only with '-d'
+                          and '-csv' flag
 ```
 
 ### Example

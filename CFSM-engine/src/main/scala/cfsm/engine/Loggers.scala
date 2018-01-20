@@ -28,8 +28,8 @@ import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter}
 import java.util.concurrent.atomic.AtomicLong
 
 import cfsm.domain.Transition
-import org.joda.time.{DateTime, DateTimeZone}
 import org.joda.time.format.ISODateTimeFormat
+import org.joda.time.{DateTime, DateTimeZone}
 
 /**
   * Loggers aimed to record mining results
@@ -51,7 +51,11 @@ object Loggers {
     *
     * @param file path to a file where the logs will be stored
     */
-  def CSVLogger(file: File, delim: String, caseId: AtomicLong, eventId: AtomicLong): Logger = {
+  def CSVLogger(file: File,
+                delim: String,
+                caseId: AtomicLong,
+                eventId: AtomicLong,
+                logShowOptions: LogShowOptions): Logger = {
     val fileAppender = appender(file)
 
     val usedCaseId = caseId.incrementAndGet()
@@ -68,21 +72,34 @@ object Loggers {
         val outRFC3339 = fmt.print(dt)
 
         transitions.foreach { transition =>
-          fileAppender.append(usedCaseId.toString)
-          fileAppender.append(delim)
-          fileAppender.append(usedEventId.toString)
-          fileAppender.append(delim)
-          fileAppender.append(transition.machine.name)
-          fileAppender.append("-")
-          fileAppender.append(transition.from.name())
-          fileAppender.append("->")
-          fileAppender.append(transition.to.name())
-          fileAppender.append("-")
-          fileAppender.append(transition.condition)
-          fileAppender.append(delim)
-          fileAppender.append(outRFC3339)
-          fileAppender.append(delim)
-          fileAppender.append(EOL)
+
+          val resultString = new StringBuilder()
+
+          resultString.append(usedCaseId.toString)
+          resultString.append(delim)
+          resultString.append(usedEventId.toString)
+          resultString.append(delim)
+          resultString.append(transition.machine.name)
+          resultString.append("-")
+          resultString.append(transition.name())
+
+          if (logShowOptions.showStates) {
+            resultString.append("-")
+            resultString.append(transition.from.name())
+            resultString.append("->")
+            resultString.append(transition.to.name())
+          }
+
+          if (logShowOptions.showConditions) {
+            resultString.append("-")
+            resultString.append(transition.condition)
+          }
+
+          resultString.append(delim)
+          resultString.append(outRFC3339)
+          resultString.append(EOL)
+
+          fileAppender.append(resultString.toString())
         }
     }
   }
@@ -118,3 +135,5 @@ object Loggers {
     new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"))
   }
 }
+
+case class LogShowOptions(showStates: Boolean, showConditions: Boolean)
