@@ -51,7 +51,11 @@ object Loggers {
     *
     * @param file path to a file where the logs will be stored
     */
-  def CSVLogger(file: File, delim: String, caseId: AtomicLong, eventId: AtomicLong): Logger = {
+  def CSVLogger(file: File,
+                delim: String,
+                caseId: AtomicLong,
+                eventId: AtomicLong,
+                logShowOptions: LogShowOptions): Logger = {
     val fileAppender = appender(file)
 
     val usedCaseId = caseId.incrementAndGet()
@@ -78,6 +82,19 @@ object Loggers {
           resultString.append(transition.machine.name)
           resultString.append("-")
           resultString.append(transition.name())
+
+          if (logShowOptions.showStates) {
+            resultString.append("-")
+            resultString.append(transition.from.name())
+            resultString.append("->")
+            resultString.append(transition.to.name())
+          }
+
+          if (logShowOptions.showConditions) {
+            resultString.append("-")
+            resultString.append(transition.condition)
+          }
+
           resultString.append(delim)
           resultString.append(outRFC3339)
           resultString.append(EOL)
@@ -118,3 +135,5 @@ object Loggers {
     new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true), "UTF-8"))
   }
 }
+
+case class LogShowOptions(showStates: Boolean, showConditions: Boolean)
