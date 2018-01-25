@@ -136,4 +136,4 @@ object Loggers {
   }
 }
 
-case class CmdOptions(showStates: Boolean, showConditions: Boolean, maxEvents: Long = DefaultMaxEvents)
+case class CmdOptions(showStates: Boolean, showConditions: Boolean, maxEvents: Long = DefaultMaxEvents, cases: Long)
