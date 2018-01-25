@@ -24,7 +24,7 @@
 package cfsm
 
 import cfsm.domain._
-import cfsm.engine.Loggers.Logger
+import cfsm.engine.Loggers._
 import cfsm.engine.Selectors.Selector
 
 import scala.collection.JavaConverters._
@@ -59,7 +59,7 @@ package object engine {
     * @param select    function responsible for figuring out which transition should be chosen
     * @param maxEvents maximum amount of events
     */
-  def mine(config: CFSMConfiguration, log: Logger, select: Selector, maxEvents: Long): Unit = {
+  def mine(config: CFSMConfiguration, log: Logger, select: Selector, maxEvents: Long = DefaultMaxEvents): Unit = {
 
     implicit val miningMachines: Map[String, MiningMachine] = config.machines.asScala.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)
