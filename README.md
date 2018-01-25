@@ -27,14 +27,17 @@ Note: make sure you have java 8/9 installed.
 
 ```text
 usage: cfsm
- -csv                     Format of logs is csv. Work only with '-d' flag
- -d,--destination <arg>   Path where generated logs will be stored
- -f,--file <arg>          Path to file with description of model
- -h,--help                Print help message
- -sc,--show-conditions    Print conditions in csv log. Works only with
-                          '-d' and '-csv' flag
- -ss,--show-states        Print states in csv log. Works only with '-d'
-                          and '-csv' flag
+ -csv                       Format of logs is csv. Work only with '-d'
+                            flag
+ -d,--destination <arg>     Path where generated logs will be stored
+ -elim,--max-events <arg>   maximum amount of events inside one generation
+                            session
+ -f,--file <arg>            Path to file with description of model
+ -h,--help                  Print help message
+ -sc,--show-conditions      Print conditions in csv log. Works only with
+                            '-d' and '-csv' flag
+ -ss,--show-states          Print states in csv log. Works only with '-d'
+                            and '-csv' flag
 ```
 
 ### Example
