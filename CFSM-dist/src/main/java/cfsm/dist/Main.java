@@ -23,7 +23,7 @@
 package cfsm.dist;
 
 import cfsm.domain.CFSMConfiguration;
-import cfsm.engine.LogShowOptions;
+import cfsm.engine.CmdOptions;
 import cfsm.parser.Parser;
 import cfsm.syntax.SyntaxChecker;
 import io.vertx.core.json.JsonObject;
@@ -35,6 +35,9 @@ import java.io.File;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Main {
+
+    public static final Long DefaultMaxEvents = 10000L;
+
     public static void main(String[] args) {
         init(args);
     }
@@ -49,10 +52,11 @@ public class Main {
             options.addOption("h", "help", false, "Print help message");
             options.addOption("d", "destination", true, "Path where generated logs will be stored");
             options.addOption("csv", false, "Format of logs is csv. Work only with '-d' flag");
-            options.addOption("ss","show-states", false, "Print states in csv log." +
+            options.addOption("ss", "show-states", false, "Print states in csv log." +
                     " Works only with '-d' and '-csv' flag");
-            options.addOption("sc","show-conditions", false, "Print conditions in csv log." +
+            options.addOption("sc", "show-conditions", false, "Print conditions in csv log." +
                     " Works only with '-d' and '-csv' flag");
+            options.addOption("elim", "max-events", true, "maximum amount of events inside one generation session");
 
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
@@ -67,7 +71,13 @@ public class Main {
             String file = cmd.getOptionValue("file");
             String dest = cmd.getOptionValue("destination");
             Boolean csv = cmd.hasOption("csv");
-            LogShowOptions logShowOptions = new LogShowOptions(cmd.hasOption("show-states"), cmd.hasOption("show-conditions"));
+            Long maxEvents = options.hasOption("elim") ? Long.parseLong(cmd.getOptionValue("elim")) : DefaultMaxEvents;
+
+            CmdOptions cmdOptions = new CmdOptions(
+                    cmd.hasOption("show-states"),
+                    cmd.hasOption("show-conditions"),
+                    maxEvents
+            );
 
             // check for -file option
             if (file == null) {
@@ -108,7 +118,7 @@ public class Main {
             AtomicLong eventId = new AtomicLong(0);
 
             // begin mining
-            Mining.begin(configuration, dest, csv, caseId, eventId, logShowOptions);
+            Mining.begin(configuration, dest, csv, caseId, eventId, cmdOptions);
         } catch (ParseException e) {
             System.out.println("Not able to parse given options. Please, use help for details");
             e.printStackTrace();

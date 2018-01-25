@@ -54,17 +54,21 @@ package object engine {
   /**
     * Main engine function responsible for log mining
     *
-    * @param config machines configuration
-    * @param log    when one iteration is done the function called in order to decide whether we should move next or not
-    * @param select function responsible for figuring out which transition should be chosen
+    * @param config    machines configuration
+    * @param log       when one iteration is done the function called in order to decide whether we should move next or not
+    * @param select    function responsible for figuring out which transition should be chosen
+    * @param maxEvents maximum amount of events
     */
-  def mine(config: CFSMConfiguration, log: Logger, select: Selector): Unit = {
+  def mine(config: CFSMConfiguration, log: Logger, select: Selector, maxEvents: Long): Unit = {
 
     implicit val miningMachines: Map[String, MiningMachine] = config.machines.asScala.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)
+    var curEvents: Long = 0
 
     // while there are a place to go
-    while (enabledTransitions.nonEmpty) {
+    while (enabledTransitions.nonEmpty && okInCounting(curEvents, maxEvents)) {
+
+      curEvents += 1
 
       // choosing a transition delegating responsibility to a selector function
       val selectedTransition: String = select(enabledTransitions.keys)
@@ -82,8 +86,15 @@ package object engine {
       // refresh enabled transitions
       enabledTransitions = getEnabledTransitions(miningMachines)
     }
+  }
 
-    // report end of mining
-    log(List())
+  /**
+    * @return is not counting limit exceed?
+    */
+  def okInCounting(cur: Long, max: Long): Boolean = {
+    (cur, max) match {
+      case (_, maxEvents) if maxEvents < 0 => true
+      case (curEvents, maxEvents) => maxEvents > curEvents
+    }
   }
 }
