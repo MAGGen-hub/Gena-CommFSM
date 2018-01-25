@@ -48,7 +48,11 @@ object Mining {
       } else {
         val file = new File(destination)
         val log = FileLogger(file)
-        new Thread(log).start()
+
+        val logThread = new Thread(log)
+        logThread.setDaemon(true)
+        logThread.setName("cfsm-logger-01")
+        logThread.start()
         Some(log)
       }
     try {
