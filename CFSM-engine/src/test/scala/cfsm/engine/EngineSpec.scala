@@ -38,6 +38,19 @@ class EngineSpec extends TestBase {
 
   behavior of "engine"
 
+  it should "generate exactly as many events as specified" in {
+    val limit = 20
+    val log: Logger = {
+      case Nil =>
+      case so if int.get > limit => 1 shouldBe 2
+      case trans => int.incrementAndGet()
+    }
+
+    withConfig("inf.json") { config: CFSMConfiguration =>
+      mine(config, log, Selectors.RandomSelector, limit)
+    }
+  }
+
   it should "work on basic example" in {
     // there are only one machine with one transitions
     val log: Logger = {

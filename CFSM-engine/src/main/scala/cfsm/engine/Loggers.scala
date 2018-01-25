@@ -28,6 +28,7 @@ import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter}
 import java.util.concurrent.atomic.AtomicLong
 
 import cfsm.domain.Transition
+import cfsm.engine.Loggers.DefaultMaxEvents
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 
@@ -45,26 +46,27 @@ object Loggers {
 
   val EOL = "\n"
   val SPACE = " "
+  val DefaultMaxEvents = 10000
 
   /**
     * Log everything to specified file in CSV format
     *
     * @param file path to a file where the logs will be stored
     */
-  def CSVLogger(file: File,
+  def CSVLogger(file: FileLogger,
                 delim: String,
                 caseId: AtomicLong,
                 eventId: AtomicLong,
-                logShowOptions: LogShowOptions): Logger = {
-    val fileAppender = appender(file)
+                cmdOptions: CmdOptions,
+                header: Boolean = false): Logger = {
 
     val usedCaseId = caseId.incrementAndGet()
-    fileAppender.append(s"case-id${delim}event-id${delim}event-type${delim}timestamp$delim\n")
+
+    if (header)
+      file.append(s"case-id${delim}event-id${delim}event-type${delim}timestamp$delim\n")
 
     {
-      case Nil =>
-        fileAppender.close()
-      case transitions =>
+      transitions =>
 
         val usedEventId = eventId.incrementAndGet()
         val dt = new DateTime(DateTimeZone.getDefault)
@@ -83,14 +85,14 @@ object Loggers {
           resultString.append("-")
           resultString.append(transition.name())
 
-          if (logShowOptions.showStates) {
+          if (cmdOptions.showStates) {
             resultString.append("-")
             resultString.append(transition.from.name())
             resultString.append("->")
             resultString.append(transition.to.name())
           }
 
-          if (logShowOptions.showConditions) {
+          if (cmdOptions.showConditions) {
             resultString.append("-")
             resultString.append(transition.condition)
           }
@@ -99,7 +101,7 @@ object Loggers {
           resultString.append(outRFC3339)
           resultString.append(EOL)
 
-          fileAppender.append(resultString.toString())
+          file.append(resultString.toString())
         }
     }
   }
@@ -109,14 +111,12 @@ object Loggers {
     *
     * @param file path to a file where the logs will be stored
     */
-  def SimpleFileLogger(file: File): Logger = {
-    val fileAppender = appender(file)
-
+  def SimpleFileLogger(file: FileLogger): Logger = {
     {
       case Nil =>
-        fileAppender.close()
+        file.close()
       case transitions =>
-        transitions.foreach(transition => fileAppender.append(transition.toString + EOL))
+        transitions.foreach(transition => file.append(transition.toString + EOL))
     }
   }
 
@@ -136,4 +136,4 @@ object Loggers {
   }
 }
 
-case class LogShowOptions(showStates: Boolean, showConditions: Boolean)
+case class CmdOptions(showStates: Boolean, showConditions: Boolean, maxEvents: Long = DefaultMaxEvents)

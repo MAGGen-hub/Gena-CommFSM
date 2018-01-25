@@ -28,10 +28,9 @@ import java.util.concurrent.atomic.AtomicLong
 
 import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
-import cfsm.engine.{LogShowOptions, Loggers, Selectors, mine}
+import cfsm.engine._
 
 object Mining {
-
   /**
     * Entry point of mining
     */
@@ -40,14 +39,30 @@ object Mining {
             csv: Boolean,
             caseId: AtomicLong,
             eventId: AtomicLong,
-            logShowOptions: LogShowOptions): Unit = {
+            logShowOptions: CmdOptions): Unit = {
+
     // choosing a logger
-    val log: Logger = if (destination == null) {
-      Loggers.SimpleLogger
-    } else {
-      val file = new File(destination)
-      if (csv) Loggers.CSVLogger(file, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(file)
+    val fileLogger: Option[FileLogger] =
+      if (destination == null) {
+        None
+      } else {
+        val file = new File(destination)
+        val log = FileLogger(file)
+        new Thread(log).start()
+        Some(log)
+      }
+    try {
+      val log: Logger = fileLogger match {
+        case None => Loggers.SimpleLogger
+        case Some(fLogger) => if (csv) Loggers.CSVLogger(fLogger, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(fLogger)
+      }
+      mine(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
     }
-    mine(conf, log, Selectors.RandomSelector)
+    finally {
+      fileLogger match {
+        case None =>
+        case Some(log) => log.close()
+      }
+    }
   }
 }

@@ -38,7 +38,7 @@ object Selectors {
 
     val random = new SecureRandom();
     { strings =>
-      val index = random.nextInt() % strings.size
+      val index = random.nextInt(Int.MaxValue) % strings.size
       strings.toVector(index)
     }
   }
