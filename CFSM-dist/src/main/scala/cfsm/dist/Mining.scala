@@ -42,25 +42,26 @@ object Mining {
             logShowOptions: CmdOptions): Unit = {
 
     // choosing a logger
-    var fileLogger: FileLogger = null
-    try {
-      val log: Logger = if (destination == null) {
-        Loggers.SimpleLogger
+    val fileLogger: Option[FileLogger] =
+      if (destination == null) {
+        None
       } else {
         val file = new File(destination)
-        val fileLogger = FileLogger(file)
-
-        // launch logger
-        new Thread(fileLogger).start()
-
-        if (csv) Loggers.CSVLogger(fileLogger, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(fileLogger)
+        val log = FileLogger(file)
+        new Thread(log).start()
+        Some(log)
       }
-
+    try {
+      val log: Logger = fileLogger match {
+        case None => Loggers.SimpleLogger
+        case Some(fLogger) => if (csv) Loggers.CSVLogger(fLogger, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(fLogger)
+      }
       mine(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
     }
     finally {
-      if (fileLogger != null) {
-        fileLogger.close()
+      fileLogger match {
+        case None =>
+        case Some(log) => log.close()
       }
     }
   }
