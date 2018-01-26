@@ -72,7 +72,7 @@ object Mining {
               mine(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
             }
         }),
-      10 seconds
+      Int.MaxValue.seconds
     )
 
     fileLogger match {
