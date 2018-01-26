@@ -27,6 +27,7 @@ Note: make sure you have java 8/9 installed.
 
 ```text
 usage: cfsm
+ -c,--cases <arg>           amount of cases to generate
  -csv                       Format of logs is csv. Work only with '-d'
                             flag
  -d,--destination <arg>     Path where generated logs will be stored
