@@ -24,7 +24,7 @@ group 'CFSM'
 
 ext {
     // CFSM project family version
-    projectReleaseVersion = '1.0.1'
+    projectReleaseVersion = '1.1.0'
 
     // used libs versions
     scalaVersion = '2.12'
