@@ -85,7 +85,12 @@ case class FileLogger(file: File, bufferSize: Int = DefaultBufferSize) extends R
       Thread.sleep(100)
     }
     isOpen = false
-    queue.add("")
+    queue.add("END")
+    while (!queue.isEmpty) {
+      Thread.sleep(100)
+    }
+    appender.flush()
     appender.close()
+    println("done")
   }
 }

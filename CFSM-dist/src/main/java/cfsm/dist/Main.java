@@ -73,8 +73,8 @@ public class Main {
             String file = cmd.getOptionValue("file");
             String dest = cmd.getOptionValue("destination");
             Boolean csv = cmd.hasOption("csv");
-            Long maxEvents = options.hasOption("elim") ? DefaultMaxEvents : Long.parseLong(cmd.getOptionValue("elim"));
-            Long cases = options.hasOption("c") ? DefaultCases : Long.parseLong(cmd.getOptionValue("c"));
+            Long maxEvents = cmd.hasOption("elim") ? Long.parseLong(cmd.getOptionValue("elim")) : DefaultMaxEvents;
+            Long cases = cmd.hasOption("c") ? Long.parseLong(cmd.getOptionValue("c")) : DefaultCases;
 
             CmdOptions cmdOptions = new CmdOptions(
                     cmd.hasOption("show-states"),
