@@ -30,6 +30,10 @@ import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
 import cfsm.engine._
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+
 object Mining {
   /**
     * Entry point of mining
@@ -55,18 +59,25 @@ object Mining {
         logThread.start()
         Some(log)
       }
-    try {
-      val log: Logger = fileLogger match {
-        case None => Loggers.SimpleLogger
-        case Some(fLogger) => if (csv) Loggers.CSVLogger(fLogger, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(fLogger)
-      }
-      mine(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
-    }
-    finally {
-      fileLogger match {
-        case None =>
-        case Some(log) => log.close()
-      }
+
+    Await.ready(
+      Future.sequence(
+        (1 to logShowOptions.cases.toInt).map {
+          _ =>
+            Future {
+              val log: Logger = fileLogger match {
+                case None => Loggers.SimpleLogger
+                case Some(fLogger) => if (csv) Loggers.CSVLogger(fLogger, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(fLogger)
+              }
+              mine(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
+            }
+        }),
+      Int.MaxValue.seconds
+    )
+
+    fileLogger match {
+      case None =>
+      case Some(logger) => logger.close()
     }
   }
 }

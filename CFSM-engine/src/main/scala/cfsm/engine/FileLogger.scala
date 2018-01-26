@@ -31,7 +31,7 @@ import cfsm.engine.FileLogger.DefaultBufferSize
 import scala.util.Try
 
 object FileLogger {
-  val DefaultBufferSize = 10000
+  val DefaultBufferSize = 10
 
   def apply(file: File, bufferSize: Int = DefaultBufferSize): FileLogger = new FileLogger(file, bufferSize)
 }
@@ -81,7 +81,16 @@ case class FileLogger(file: File, bufferSize: Int = DefaultBufferSize) extends R
     * Close logger
     */
   def close(): Unit = {
+    while (!queue.isEmpty) {
+      Thread.sleep(100)
+    }
     isOpen = false
+    queue.add("")
+    while (!queue.isEmpty) {
+      Thread.sleep(100)
+    }
+    appender.flush()
     appender.close()
+    println("done")
   }
 }

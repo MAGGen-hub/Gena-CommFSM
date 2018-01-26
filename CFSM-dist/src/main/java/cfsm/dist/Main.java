@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class Main {
 
     public static final Long DefaultMaxEvents = 10000L;
+    public static final Long DefaultCases = 1L;
 
     public static void main(String[] args) {
         init(args);
@@ -57,6 +58,7 @@ public class Main {
             options.addOption("sc", "show-conditions", false, "Print conditions in csv log." +
                     " Works only with '-d' and '-csv' flag");
             options.addOption("elim", "max-events", true, "maximum amount of events inside one generation session");
+            options.addOption("c", "cases", true, "amount of cases to generate");
 
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
@@ -71,12 +73,14 @@ public class Main {
             String file = cmd.getOptionValue("file");
             String dest = cmd.getOptionValue("destination");
             Boolean csv = cmd.hasOption("csv");
-            Long maxEvents = options.hasOption("elim") ? DefaultMaxEvents : Long.parseLong(cmd.getOptionValue("elim"));
+            Long maxEvents = cmd.hasOption("elim") ? Long.parseLong(cmd.getOptionValue("elim")) : DefaultMaxEvents;
+            Long cases = cmd.hasOption("c") ? Long.parseLong(cmd.getOptionValue("c")) : DefaultCases;
 
             CmdOptions cmdOptions = new CmdOptions(
                     cmd.hasOption("show-states"),
                     cmd.hasOption("show-conditions"),
-                    maxEvents
+                    maxEvents,
+                    cases
             );
 
             // check for -file option
