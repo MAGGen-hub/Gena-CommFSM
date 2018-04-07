@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import scala.Option;
 import scala.Tuple2;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -129,6 +130,12 @@ public class ParserTest extends ParserHarness {
     public void outboundFromFinal() {
         String validate = validateJSON("outbound_from_final.json");
         assertTrue(!validate.equals(SyntaxChecker.OK()));
+    }
+
+    @Test
+    public void articleExample() {
+        String validate = validateJSON("example_from_article.json");
+        assertEquals(validate, SyntaxChecker.OK());
     }
 
 

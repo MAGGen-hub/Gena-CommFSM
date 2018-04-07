@@ -1,0 +1,82 @@
+{
+  "protocol": "CFSM 0.2",
+  "automata": [
+    {
+      "name": "A",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "A_1"
+        },
+        {
+          "type": "FINAL",
+          "name": "A_2"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition1",
+          "type": "SENDM",
+          "condition": "!B",
+          "from": "A_1",
+          "to": "A_2"
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "B_1"
+        },
+        {
+          "type": "GENERAL",
+          "name": "B_2"
+        },
+        {
+          "type": "FINAL",
+          "name": "B_3"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition2",
+          "type": "RECM",
+          "condition": "?A",
+          "from": "B_1",
+          "to": "B_2"
+        },
+        {
+          "name": "transition3",
+          "type": "SENDM",
+          "condition": "!C",
+          "from": "B_2",
+          "to": "B_3"
+        }
+      ]
+    },
+    {
+      "name": "C",
+      "states": [
+        {
+          "type": "INITIAL",
+          "name": "C_1"
+        },
+        {
+          "type": "FINAL",
+          "name": "C_2"
+        }
+      ],
+      "transitions": [
+        {
+          "name": "transition4",
+          "type": "RECM",
+          "condition": "?B",
+          "from": "C_1",
+          "to": "C_2"
+        }
+      ]
+    }
+  ]
+}
