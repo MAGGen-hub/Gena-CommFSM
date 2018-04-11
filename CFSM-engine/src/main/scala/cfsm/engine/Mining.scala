@@ -21,18 +21,17 @@
 *  SOFTWARE.
 */
 
-package cfsm.dist
+package cfsm.engine
 
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 
 import cfsm.domain.CFSMConfiguration
 import cfsm.engine.Loggers.Logger
-import cfsm.engine._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 object Mining {
   /**
@@ -69,7 +68,7 @@ object Mining {
                 case None => Loggers.SimpleLogger
                 case Some(fLogger) => if (csv) Loggers.CSVLogger(fLogger, ";", caseId, eventId, logShowOptions) else Loggers.SimpleFileLogger(fLogger)
               }
-              mine(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
+              emulate(conf, log, Selectors.RandomSelector, logShowOptions.maxEvents)
             }
         }),
       Int.MaxValue.seconds

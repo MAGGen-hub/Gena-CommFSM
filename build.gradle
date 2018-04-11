@@ -29,8 +29,8 @@ ext {
     // used libs versions
     scalaVersion = '2.12'
     jodaTimeVersion = '2.9.9'
-    scalaVersionFull = "$scalaVersion.4"
-    vertxVersion = '3.5.0'
+    scalaVersionFull = "$scalaVersion.5"
+    vertxVersion = '3.5.1'
     slf4jVersion = '1.7.25'
     commonsCliVersion = '1.4'
     codacyReporterVersion = '1.0.7'
@@ -50,24 +50,10 @@ subprojects {
         testCompile group: 'junit', name: 'junit', version: junitVersion
         testCompile group: 'org.scalatest', name: "scalatest_$scalaVersion", version: scalaTestVersion
     }
-
-    // for cross java-scala compilation
-    sourceSets {
-        main {
-            scala {
-                //noinspection GroovyAssignabilityCheck
-                srcDirs = ['src/main/scala', 'src/main/java']
-            }
-            java {
-                srcDirs = []
-            }
-        }
-    }
 }
 
 task codeCoverageReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
     subprojects.each {
         sourceSets it.sourceSets.main
     }
@@ -100,5 +86,5 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.3.1'
+    gradleVersion = '4.6'
 }

@@ -52,14 +52,14 @@ package object engine {
       }
 
   /**
-    * Main engine function responsible for log mining
+    * Main engine function responsible for log generation
     *
     * @param config    machines configuration
     * @param log       when one iteration is done the function called in order to decide whether we should move next or not
     * @param select    function responsible for figuring out which transition should be chosen
     * @param maxEvents maximum amount of events
     */
-  def mine(config: CFSMConfiguration, log: Logger, select: Selector, maxEvents: Long = DefaultMaxEvents): Unit = {
+  def emulate(config: CFSMConfiguration, log: Logger, select: Selector, maxEvents: Long = DefaultMaxEvents): Unit = {
 
     implicit val miningMachines: Map[String, MiningMachine] = config.machines.asScala.map(pair => (pair._1, MiningMachine(pair._2))).toMap
     var enabledTransitions = getEnabledTransitions(miningMachines)

@@ -47,7 +47,7 @@ class EngineSpec extends TestBase {
     }
 
     withConfig("inf.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector, limit)
+      emulate(config, log, Selectors.RandomSelector, limit)
     }
   }
 
@@ -58,7 +58,7 @@ class EngineSpec extends TestBase {
       case trans => trans.toVector(0).name shouldBe "transition1"
     }
     withConfig("cfsm.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector)
+      emulate(config, log, Selectors.RandomSelector)
     }
   }
 
@@ -75,7 +75,7 @@ class EngineSpec extends TestBase {
         int.incrementAndGet()
     }
     withConfig("cfsm1.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector)
+      emulate(config, log, Selectors.RandomSelector)
     }
   }
 
@@ -95,7 +95,7 @@ class EngineSpec extends TestBase {
         int.incrementAndGet()
     }
     withConfig("cfsm2.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector)
+      emulate(config, log, Selectors.RandomSelector)
     }
   }
 
@@ -113,7 +113,7 @@ class EngineSpec extends TestBase {
         int.incrementAndGet()
     }
     withConfig("cfsm_same_name_transition.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector)
+      emulate(config, log, Selectors.RandomSelector)
     }
   }
 
@@ -127,7 +127,7 @@ class EngineSpec extends TestBase {
     }
 
     withConfig("cfsm_same_name_transition_no_actions.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector)
+      emulate(config, log, Selectors.RandomSelector)
     }
   }
 
@@ -147,7 +147,7 @@ class EngineSpec extends TestBase {
     }
 
     withConfig("several_rec_machines.json") { config: CFSMConfiguration =>
-      mine(config, log, Selectors.RandomSelector)
+      emulate(config, log, Selectors.RandomSelector)
     }
   }
 }

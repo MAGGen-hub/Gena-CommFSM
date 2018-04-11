@@ -24,6 +24,7 @@ package cfsm.dist;
 
 import cfsm.domain.CFSMConfiguration;
 import cfsm.engine.CmdOptions;
+import cfsm.engine.Mining;
 import cfsm.parser.Parser;
 import cfsm.syntax.SyntaxChecker;
 import io.vertx.core.json.JsonObject;
