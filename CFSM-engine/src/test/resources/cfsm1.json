@@ -1,5 +1,5 @@
 {
-  "protocol": "CFSM 0.2",
+  "protocol": "CFSM 0.3",
   "automata": [
     {
       "name": "machine1",
@@ -17,7 +17,7 @@
         {
           "name": "transition1",
           "type": "SENDM",
-          "condition": "!machine2",
+          "condition": "machine2 ! msg1",
           "from": "state1",
           "to": "state2"
         }
@@ -39,7 +39,7 @@
         {
           "name": "transition2",
           "type": "RECM",
-          "condition": "?machine1",
+          "condition": "machine1 ? msg1",
           "from": "state1",
           "to": "state2"
         }

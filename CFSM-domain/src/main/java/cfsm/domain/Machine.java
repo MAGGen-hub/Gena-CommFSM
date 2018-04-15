@@ -23,6 +23,7 @@
 package cfsm.domain;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The object is represents a machine with ability to communicate
@@ -89,5 +90,18 @@ public class Machine {
      */
     public State initialState() {
         return initialState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Machine machine = (Machine) o;
+        return Objects.equals(name, machine.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

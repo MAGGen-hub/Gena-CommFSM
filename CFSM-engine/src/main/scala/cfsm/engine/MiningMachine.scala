@@ -27,13 +27,14 @@ import cfsm.domain._
 import cfsm.engine.Loggers.SPACE
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
+import scala.collection.{immutable, mutable}
 
 case class MiningMachine(machineModel: Machine) {
 
   // a machine storing messages here
   // sender <----> count_of_messages
-  val mailBox: mutable.Map[MiningMachine, Int] = mutable.Map[MiningMachine, Int]()
+  val mailBox: mutable.Map[MiningMachine, mutable.Map[String, Int]] =
+  mutable.Map[MiningMachine, mutable.Map[String, Int]]()
 
   // a current state of machine
   @volatile
@@ -53,22 +54,25 @@ case class MiningMachine(machineModel: Machine) {
       case TransitionType.RECM =>
 
         // we sure that the valued is present since it was ensured by MiningMachine#canGoOnTransition
-        val machineName = transition.condition.replace("?", SPACE).trim.split(SPACE).view
-          // take a random available mailbox
-          .filter(name => allMachines.get(name).isDefined)
+        val machineAndMsg = recMachines(transition)
+          .view
+          .filter { machineAndMsg =>
+            mailBox(allMachines(machineAndMsg._1)).getOrElseUpdate(machineAndMsg._2, 0) > 0
+          }
           .take(1)
           .head
 
-        val currentMailCount: Int = mailBox(machineName)
-        mailBox.put(machineName, currentMailCount - 1)
+        val box = mailBox(machineAndMsg._1)
+        val count = box(machineAndMsg._2)
+        box.update(machineAndMsg._1, count - 1)
+
 
       case TransitionType.SENDM =>
-        val machineName = transition.condition.substring(1)
-        val receiver = allMachines(machineName)
-        // send directly to the mailbox of target
-        receiver.mailBox.get(this) match {
-          case None => receiver.mailBox.put(this, 1)
-          case Some(count) => receiver.mailBox.put(this, count + 1)
+        val machineAndMsg: immutable.Seq[(String, String)] = sendMachines(transition)
+        machineAndMsg.foreach { mAndMsg =>
+          val receiver = allMachines(mAndMsg._1)
+          val mailMap = receiver.mailBox.getOrElseUpdate(this, mutable.Map(mAndMsg._2 -> 0))
+          mailMap.put(mAndMsg._2, mailMap.getOrElse(mAndMsg._2, 0) + 1)
         }
     }
     state = transition.to
@@ -92,25 +96,42 @@ case class MiningMachine(machineModel: Machine) {
 
       // for these it just does not matter
       case TransitionType.PRIVATE | TransitionType.SHARED | TransitionType.SENDM => true
-      case TransitionType.RECM =>
+      case TransitionType.RECM => ableToRecm(transition)
 
-        // "?A?B?C" -> List("A","B","C")
-        transition.condition.replace("?", SPACE).trim.split(SPACE).view
-          // take random available mailbox
-          .filter(name => allMachines.get(name).isDefined)
-          .take(1)
-          .headOption match {
-          case None => false
-          case Some(machineName) =>
-
-            // initialize mailbox if it is empty
-            mailBox.getOrElseUpdate(allMachines(machineName), 0)
-            val currentMailCount: Int = mailBox(machineName)
-
-            // are we are we able to receive?
-            currentMailCount > 0
-        }
     }
+  }
+
+  def ableToRecm(transition: Transition)
+                (implicit allMachines: Map[String, MiningMachine]): Boolean = {
+
+    // A ? msg1 :: B ? msg2  => List(("A","msg1"),("B,"msg2"))
+    recMachines(transition)
+      .view
+      .filter { machineAndMsg =>
+        mailBox
+          .getOrElseUpdate(
+            allMachines(machineAndMsg._1)
+            , mutable.Map())
+          .getOrElseUpdate(machineAndMsg._2, 0) > 0
+      }
+      .take(1)
+      .headOption match {
+      case None => false
+      case Some(_) => true
+    }
+  }
+
+  def recMachines(transition: Transition): List[(String, String)] = machineAndMsg(transition)("\\?")
+
+  def sendMachines(transition: Transition): List[(String, String)] = machineAndMsg(transition)("\\!")
+
+  def machineAndMsg(transition: Transition)(symb: String): List[(String, String)] = {
+    transition.condition.split("::")
+      .toList
+      .map { statement =>
+        val stmnts = statement.split(symb)
+        (stmnts(0).trim, stmnts(1).trim)
+      }
   }
 
   /**
