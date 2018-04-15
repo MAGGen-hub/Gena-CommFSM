@@ -34,6 +34,7 @@ usage: cfsm
                             session
  -f,--file <arg>            Path to file with description of model
  -h,--help                  Print help message
+ -nv,--no-validation        should config file be validated
  -sc,--show-conditions      Print conditions in csv log. Works only with
                             '-d' and '-csv' flag
  -ss,--show-states          Print states in csv log. Works only with '-d'
@@ -63,7 +64,7 @@ Let's say you have a configuration file like this:
         {
           "name": "transition1",
           "type": "SENDM",
-          "condition": "!B",
+          "condition": "B ! msg1",
           "from": "state1",
           "to": "state2"
         }
@@ -89,14 +90,14 @@ Let's say you have a configuration file like this:
         {
           "name": "transition2",
           "type": "RECM",
-          "condition": "?A",
+          "condition": "A ? msg1",
           "from": "state1",
           "to": "state2"
         },
         {
           "name": "transition3",
           "type": "SENDM",
-          "condition": "!C",
+          "condition": "C ! msg1",
           "from": "state2",
           "to": "state3"
         }
@@ -118,7 +119,7 @@ Let's say you have a configuration file like this:
         {
           "name": "transition4",
           "type": "RECM",
-          "condition": "?B",
+          "condition": "B ? msg1",
           "from": "state1",
           "to": "state2"
         }
