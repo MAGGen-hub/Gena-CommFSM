@@ -60,6 +60,7 @@ public class Main {
                     " Works only with '-d' and '-csv' flag");
             options.addOption("elim", "max-events", true, "maximum amount of events inside one generation session");
             options.addOption("c", "cases", true, "amount of cases to generate");
+            options.addOption("nv", "no-validation", false, "should config file be validated");
 
             CommandLineParser parser = new DefaultParser();
             CommandLine cmd = parser.parse(options, args);
@@ -111,10 +112,12 @@ public class Main {
             }
 
             CFSMConfiguration configuration = Parser.parse(res._1.get());
-            String validate = Parser.validate(configuration);
-            System.out.println("Valid config objects: " + validate);
-            if (!validate.equals(SyntaxChecker.OK())) {
-                return;
+            if (!cmd.hasOption("nv")) {
+                String validate = Parser.validate(configuration);
+                System.out.println("Valid config objects: " + validate);
+                if (!validate.equals(SyntaxChecker.OK())) {
+                    return;
+                }
             }
 
             System.out.println(String.format("%d machines found", configuration.machines.size()));

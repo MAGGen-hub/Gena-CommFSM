@@ -17,14 +17,14 @@
         {
           "name": "t12",
           "type": "SENDM",
-          "condition": "!A",
+          "condition": "A ! msg1",
           "from": "1",
           "to": "2"
         },
         {
           "name": "t21",
           "type": "RECM",
-          "condition": "?A",
+          "condition": "A ? msg1",
           "from": "2",
           "to": "1"
         }
@@ -46,14 +46,14 @@
         {
           "name": "t34",
           "type": "SENDM",
-          "condition": "!B",
+          "condition": "B ! msg1",
           "from": "3",
           "to": "4"
         },
         {
           "name": "t43",
           "type": "RECM",
-          "condition": "?B",
+          "condition": "B ? msg1",
           "from": "4",
           "to": "3"
         }

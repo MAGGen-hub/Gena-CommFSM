@@ -17,7 +17,7 @@
         {
           "name": "transition1",
           "type": "SENDM",
-          "condition": "!B",
+          "condition": "B ! msg1",
           "from": "state1",
           "to": "state2"
         }
@@ -43,14 +43,14 @@
         {
           "name": "transition2",
           "type": "RECM",
-          "condition": "?A",
+          "condition": "A ? msg1",
           "from": "state1",
           "to": "state2"
         },
         {
           "name": "transition3",
           "type": "SENDM",
-          "condition": "!C",
+          "condition": "C ! msg1",
           "from": "state2",
           "to": "state3"
         }
@@ -72,7 +72,7 @@
         {
           "name": "transition4",
           "type": "RECM",
-          "condition": "?B",
+          "condition": "B ? msg1",
           "from": "state1",
           "to": "state2"
         }

@@ -1,5 +1,5 @@
 {
-  "protocol": "CFSM 0.2",
+  "protocol": "CFSM 0.3",
   "automata": [
     {
       "name": "A",

@@ -150,4 +150,11 @@ class EngineSpec extends TestBase {
       emulate(config, log, Selectors.RandomSelector)
     }
   }
+
+  it should "works with version 0.3" in {
+
+    withConfig("03spec.json") { config: CFSMConfiguration =>
+      emulate(config, t => (), Selectors.RandomSelector)
+    }
+  }
 }
