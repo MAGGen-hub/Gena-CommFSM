@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Main-Class: csfm.gui.GuiMain
+Class-Path: javafx-controls-11.0.2-linux.jar javafx-base-11.0.2-linux.ja
+ r javafx-graphics-11.0.2-linux.jar javafx-graphics-11.0.2.jar junit-jup
+ iter-api-5.8.1.jar javafx-fxml-11.0.2-linux.jar opentest4j-1.2.0.jar ju
+ nit-jupiter-engine-5.8.1.jar junit-platform-engine-1.8.1.jar javafx-con
+ trols-11.0.2.jar junit-platform-commons-1.8.1.jar javafx-base-11.0.2.ja
+ r
+
