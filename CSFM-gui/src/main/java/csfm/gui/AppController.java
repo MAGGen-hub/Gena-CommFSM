@@ -1,13 +1,16 @@
 package csfm.gui;
 
+import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
+import javafx.stage.WindowEvent;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Paths;
 
 public class AppController {
@@ -34,9 +37,54 @@ public class AppController {
     private TextArea text;
 
     @FXML
+    private void ChooseApp()
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select CFSM jar file.");
+        fileChooser.setInitialDirectory(new File(appway.getText()).getParentFile());
+        var file = fileChooser.showOpenDialog(GuiMain.primaryStage);
+        if (file != null)
+        {
+            appway.setText(file.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    private void ChooseLog()
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select log file");
+        fileChooser.setInitialDirectory(new File(logway.getText()).getParentFile());
+        var file = fileChooser.showSaveDialog(GuiMain.primaryStage);
+        if (file != null)
+        {
+            logway.setText(file.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    private void ChooseFile()
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select machine configuration file.");
+        fileChooser.setInitialDirectory(new File(fileway.getText()).getParentFile());
+        var file = fileChooser.showOpenDialog(GuiMain.primaryStage);
+        if (file != null)
+        {
+            fileway.setText(file.getAbsolutePath());
+        }
+    }
+
+    @FXML
     protected void initialize()
     {
         LoadConfig();
+        GuiMain.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                SaveConfig();
+            }
+        });
     }
 
     public void LoadConfig()
@@ -64,13 +112,22 @@ public class AppController {
 
     public void SaveConfig()
     {
-
+        try{
+            var f = new File(Paths.get("").toAbsolutePath().toString() + File.separator + "base.cfg");
+            var writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+            writer.write(appway.getText() + "\n");
+            writer.write(logway.getText() + "\n");
+            writer.write(fileway.getText() + "\n");
+            writer.close();
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     @FXML
     protected void onRunButtonClick() {
         try{
-            LoadConfig();
             String comand = "java -jar " + appway.getText();
             if (generate_csv.isSelected())
                 comand += " -csv -d " + logway.getText();

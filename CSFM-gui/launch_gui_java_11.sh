@@ -1,0 +1,1 @@
+java --module-path ./out/artifacts/CSFM_gui_jar/ --add-modules=javafx.controls,javafx.fxml -jar ./out/artifacts/CSFM_gui_jar/CSFM-gui.jar
